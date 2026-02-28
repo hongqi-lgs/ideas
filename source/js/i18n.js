@@ -85,7 +85,58 @@
   function toggleLang() {
     var current = getLang();
     var next = current === 'zh-CN' ? 'en' : 'zh-CN';
+
+    // 文章详情页：跳转到对应语言版本
+    if (isPostPage()) {
+      var targetPath = getTranslatedPostPath(next);
+      if (targetPath) {
+        localStorage.setItem(STORAGE_KEY, next);
+        window.location.href = targetPath;
+        return;
+      }
+    }
+
     setLang(next);
+  }
+
+  // 判断是否在文章详情页
+  function isPostPage() {
+    // 排除特殊页面
+    var path = window.location.pathname;
+    var specialPages = ['/tags/', '/categories/', '/archives/', '/about/', '/link/'];
+    for (var i = 0; i < specialPages.length; i++) {
+      if (path.indexOf(specialPages[i]) !== -1 && path.replace(/.*\/ideas/, '').replace(specialPages[i], '').replace(/\//g, '') === '') {
+        return false;
+      }
+    }
+    // 首页
+    var rootPath = '/ideas/';
+    if (path === rootPath || path === rootPath.slice(0, -1) || path === '/') {
+      return false;
+    }
+    // 有文章内容元素
+    return !!document.getElementById('post') || !!document.querySelector('.post');
+  }
+
+  // 获取对应语言版本的文章路径
+  function getTranslatedPostPath(targetLang) {
+    var path = window.location.pathname;
+    // 去掉末尾斜杠便于处理
+    var cleanPath = path.replace(/\/+$/, '');
+
+    if (targetLang === 'en') {
+      // 中文 → 英文：加 -en
+      if (cleanPath.match(/-en$/)) {
+        return null; // 已经是英文版
+      }
+      return cleanPath + '-en/';
+    } else {
+      // 英文 → 中文：去掉 -en
+      if (cleanPath.match(/-en$/)) {
+        return cleanPath.replace(/-en$/, '/');
+      }
+      return null; // 已经是中文版
+    }
   }
 
   // 核心：应用语言到所有 UI 元素
@@ -320,6 +371,7 @@
     apply: function () { applyLang(getLang()); }
   };
 })();
+
 
 
 
