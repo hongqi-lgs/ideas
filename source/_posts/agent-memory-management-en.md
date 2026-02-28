@@ -56,7 +56,7 @@ You don't need to remember the output of every `git push`, but you do need to re
 
 The industry's Agent memory management roughly breaks down into several layers:
 
-<!-- ![Agent Memory Hierarchy](Hierarchy: Working Memory → Short-term Memory → Long-term Memory → External Knowledge) -->
+![Agent Memory Architecture](/images/memory-layers.png)
 
 ### Working Memory
 
@@ -106,6 +106,8 @@ Most Agent memories are just piles of text fragments. But human memory is struct
 
 Based on these observations, I believe future Agent memory systems should have several characteristics:
 
+![Memory Type Characteristics](/images/memory-radar.png)
+
 ### 1. Layered + Categorized
 
 Not a simple "short-term/long-term" binary, but categorized by information type:
@@ -144,6 +146,8 @@ I've been mulling over a possibly ahead-of-its-time thought:
 
 **Future Agent memory shouldn't follow a "store-retrieve" model, but a "grow-evolve" model.**
 
+![Store & Retrieve vs Grow & Evolve](/images/memory-evolution.png)
+
 What do I mean?
 
 Current memory systems are essentially databases: store it, query it. But human memory doesn't work that way. Our memories get reorganized during sleep, different memory fragments get reconnected, forming new understanding.
@@ -169,5 +173,6 @@ We're still on the journey, but the direction is clear.
 ---
 
 *If you're also working on Agent-related projects, I'd love to connect. Find me on Twitter at [@xiaosen_lu](https://twitter.com/xiaosen_lu).*
+
 
 
