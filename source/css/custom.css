@@ -1,5 +1,30 @@
 /* ===== 全局优化 ===== */
 
+/* 导航栏渐变背景色 */
+#nav {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+#nav.nav-fixed {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+/* 导航栏链接颜色 */
+#nav a,
+#nav .site-name,
+#nav .menus_items .menus_item a {
+  color: #fff !important;
+}
+
+#nav .menus_items .menus_item a:hover {
+  color: #ffd700 !important;
+}
+
+/* 暗色模式导航栏 */
+[data-theme="dark"] #nav {
+  background: linear-gradient(135deg, #434975 0%, #4a3566 100%) !important;
+}
+
 /* 禁用 top_img 后的页面顶部间距 */
 #page-header {
   background: transparent !important;
@@ -69,5 +94,6 @@
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 
 

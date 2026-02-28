@@ -14,6 +14,7 @@ menu:
   标签: /tags/ || fas fa-tags
   分类: /categories/ || fas fa-folder-open
   关于: /about/ || fas fa-heart
+  🌐 English: /categories/English/ || fas fa-language
 
 # 代码块
 highlight_theme: mac light
@@ -24,6 +25,8 @@ highlight_shrink: false
 # 社交链接
 social:
   fab fa-github: https://github.com/hongqi-lgs || Github
+  fab fa-twitter: https://twitter.com/xiaosen_lu || Twitter
+  fab fa-weixin: /ideas/about/ || WeChat
 
 # 头像
 avatar:
@@ -179,6 +182,18 @@ preloader:
   source: 1
   pace_css_url:
 
+# 打赏
+reward:
+  enable: true
+  text: 觉得有帮助？请我喝杯咖啡 ☕
+  QR_code:
+    - img: /ideas/images/wechat-qr.svg
+      link:
+      text: 微信
+    - img: /ideas/images/alipay-qr.svg
+      link:
+      text: 支付宝
+
 # 自定义注入
 inject:
   head:
@@ -189,5 +204,8 @@ inject:
 Open_Graph_meta:
   enable: true
   option:
+
+
+
 
 

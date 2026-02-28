@@ -8,7 +8,9 @@ subtitle: 想法、技术与生活
 description: 红齐的个人博客 — 记录想法、技术与生活
 keywords: blog, tech, ideas
 author: 红齐
-language: zh-CN
+language:
+  - zh-CN
+  - en
 timezone: Asia/Shanghai
 
 # URL
