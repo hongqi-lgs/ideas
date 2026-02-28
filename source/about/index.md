@@ -27,7 +27,7 @@ type: "about"
 ## 🔗 项目
 
 - 🎨 [Luna UI](https://hongqi-lgs.github.io/HQ-UI/) — Vue3 组件库
-- 📝 [小森ideas](https://hongqi-lgs.github.io/ideas/) — 你正在看的这个博客
+- 📝 [红齐ideas](https://hongqi-lgs.github.io/ideas/) — 你正在看的这个博客
 
 ## ☕ 打赏
 
