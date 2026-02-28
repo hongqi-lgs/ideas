@@ -1,19 +1,21 @@
 'use strict';
 
-// 过滤首页文章列表：只显示中文文章（排除 English 分类）
-hexo.extend.filter.register('before_generate', function () {
-  // 不做任何操作，使用 generator filter 方式
+// 首页显示所有文章（中文+英文），前端 i18n.js 根据语言动态过滤显示
+// 不再在生成时过滤，让前端 JS 控制可见性
+
+// 给每篇文章注入 data-post-lang 属性，方便前端识别
+hexo.extend.filter.register('after_post_render', function (data) {
+  const categories = data.categories ? data.categories.map(cat => cat.name) : [];
+  const lang = categories.includes('English') ? 'en' : 'zh-CN';
+  // 在文章摘要和内容中注入标记（用于首页卡片识别）
+  data.lang_mark = lang;
+  return data;
 });
 
-// 覆盖 index generator，过滤掉 English 分类的文章
+// 覆盖 index generator，包含所有文章，但给每篇文章添加语言标记
 hexo.extend.generator.register('index', function (locals) {
   const config = this.config;
-  const posts = locals.posts.sort(config.index_generator.order_by || '-date')
-    .filter(function (post) {
-      // 排除 English 分类的文章
-      const categories = post.categories.map(cat => cat.name);
-      return !categories.includes('English');
-    });
+  const posts = locals.posts.sort(config.index_generator.order_by || '-date');
 
   const paginationDir = config.pagination_dir || 'page';
   const perPage = config.index_generator.per_page != null ? config.index_generator.per_page : config.per_page;
@@ -46,3 +48,4 @@ hexo.extend.generator.register('index', function (locals) {
 
   return result;
 });
+

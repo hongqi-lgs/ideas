@@ -85,16 +85,7 @@
   function toggleLang() {
     var current = getLang();
     var next = current === 'zh-CN' ? 'en' : 'zh-CN';
-    localStorage.setItem(STORAGE_KEY, next);
-    // 切换语言时跳转到对应的文章列表页
-    var root = '/ideas/';
-    if (next === 'en') {
-      // 切换到英文 → 跳转到英文分类页
-      window.location.href = root + 'categories/English/';
-    } else {
-      // 切换到中文 → 跳转到首页
-      window.location.href = root;
-    }
+    setLang(next);
   }
 
   // 核心：应用语言到所有 UI 元素
@@ -188,6 +179,49 @@
     if (copyright) {
       copyright.innerHTML = '&copy;&nbsp;2026 ' + t['copyright_by'];
     }
+
+    // --- 首页文章列表语言过滤 ---
+    filterPostsByLang(lang);
+  }
+
+  // 根据语言过滤首页文章卡片和侧边栏最新文章
+  function filterPostsByLang(lang) {
+    // 首页文章卡片
+    var postItems = document.querySelectorAll('.recent-post-item');
+    postItems.forEach(function (item) {
+      var catLink = item.querySelector('.article-meta__categories');
+      var isEnglish = false;
+      if (catLink) {
+        isEnglish = catLink.getAttribute('href').indexOf('/English') !== -1 ||
+                    catLink.textContent.trim() === 'English';
+      }
+      if (lang === 'en') {
+        item.style.display = isEnglish ? '' : 'none';
+      } else if (lang === 'zh-CN') {
+        item.style.display = isEnglish ? 'none' : '';
+      } else {
+        // 非中文非英文，默认显示英文
+        item.style.display = isEnglish ? '' : 'none';
+      }
+    });
+
+    // 侧边栏最新文章
+    var asideItems = document.querySelectorAll('.card-recent-post .aside-list-item');
+    asideItems.forEach(function (item) {
+      var link = item.querySelector('a.title');
+      if (!link) return;
+      var href = link.getAttribute('href') || '';
+      var title = link.textContent.trim();
+      // 判断是否英文文章：URL 包含 -en/ 或标题全英文
+      var isEnglish = /-en\/?$/.test(href) || /^[A-Za-z0-9\s\?\!\.\,\-\:\'\"]+$/.test(title);
+      if (lang === 'en') {
+        item.style.display = isEnglish ? '' : 'none';
+      } else if (lang === 'zh-CN') {
+        item.style.display = isEnglish ? 'none' : '';
+      } else {
+        item.style.display = isEnglish ? '' : 'none';
+      }
+    });
   }
 
   // 绑定语言切换按钮事件
@@ -285,6 +319,8 @@
     apply: function () { applyLang(getLang()); }
   };
 })();
+
+
 
 
 
