@@ -1,24 +1,73 @@
-/* 首页 header 高度缩小 */
-#page-header.full_page {
-  height: 40vh !important;
-  min-height: 300px !important;
+/* ===== 全局优化 ===== */
+
+/* 禁用 top_img 后的页面顶部间距 */
+#page-header {
+  background: transparent !important;
 }
 
-#page-header #site-info {
-  padding-top: 0 !important;
+/* 文章卡片美化 */
+#recent-posts > .recent-post-item {
+  border-radius: 12px !important;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
-/* 首页标题样式优化 */
-#site-info .site-name {
-  font-size: 2.5rem !important;
+#recent-posts > .recent-post-item:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+  transform: translateY(-2px);
 }
 
-#site-info .site-subtitle {
-  font-size: 1.2rem !important;
-  margin-top: 0.5rem;
+/* 侧边栏卡片美化 */
+#aside-content .card-widget {
+  border-radius: 12px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
-/* 滚动箭头位置调整 */
-#scroll-down {
-  display: none !important;
+/* 页脚统计数字样式 */
+#footer .footer-wrap .busuanzi {
+  font-size: 0.9rem;
 }
+
+/* 标签云美化 */
+.card-tag-cloud a {
+  border-radius: 6px !important;
+  padding: 4px 10px !important;
+}
+
+/* 暗色模式适配 */
+[data-theme="dark"] #recent-posts > .recent-post-item {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] #aside-content .card-widget {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 文章内容美化 */
+#article-container h2 {
+  border-bottom: 2px solid #49B1F5;
+  padding-bottom: 0.3em;
+}
+
+/* 代码块圆角 */
+#article-container figure.highlight {
+  border-radius: 10px !important;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #49B1F5;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+

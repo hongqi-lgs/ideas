@@ -5,7 +5,7 @@
 nav:
   logo:
   display_title: true
-  fixed: false
+  fixed: true
 
 # 菜单
 menu:
@@ -30,11 +30,8 @@ avatar:
   img: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
   effect: false
 
-# 首页顶部图
-# 禁用首页大图，改为小型 header
-index_img:
-index_site_info_top:
-disable_top_img: false
+# 禁用顶部大图
+disable_top_img: true
 
 # 首页文章封面
 cover:
@@ -51,7 +48,7 @@ beautify:
   title-prefix-icon: '\f0c1'
   title-prefix-icon-color: '#F47466'
 
-# 字数统计（需要安装 hexo-wordcount）
+# 字数统计
 wordcount:
   enable: false
 
@@ -107,7 +104,7 @@ aside:
       link: https://github.com/hongqi-lgs
   card_announcement:
     enable: true
-    content: 欢迎来到我的博客！这里记录我的想法、技术探索与生活感悟。
+    content: 欢迎来到我的博客！记录想法、技术与生活。
   card_recent_post:
     enable: true
     limit: 5
@@ -153,13 +150,13 @@ fancybox: true
 font:
   global-font-size:
   code-font-size:
-  font-family:
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif
   code-font-family:
 
 # 网站背景
 background:
 
-# 主题色
+# 主题色 - 清爽蓝绿色系
 theme_color:
   enable: true
   main: '#49B1F5'
@@ -192,6 +189,5 @@ inject:
 Open_Graph_meta:
   enable: true
   option:
-
 
 
