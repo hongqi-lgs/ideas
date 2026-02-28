@@ -566,8 +566,9 @@
             if (parentEl) parentEl.style.display = '';
           } else if (excerptEl) {
             // 没有翻译摘要，隐藏
-          var excerptEl = a.querySelector('.info-2');
-          if (excerptEl) excerptEl.style.display = 'none';
+            var infoDiv = a.querySelector('.info-2');
+            if (infoDiv) infoDiv.style.display = 'none';
+          }
         }
       });
     });
@@ -581,6 +582,7 @@
     apply: function () { applyLang(getLang()); }
   };
 })();
+
 
 
 
