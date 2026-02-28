@@ -4,6 +4,10 @@ date: 2026-02-28 12:00:00
 type: "about"
 ---
 
+<div style="text-align: center; margin-bottom: 24px;">
+  <img src="/ideas/images/avatar.jpg" alt="红齐" class="avatar-circle" style="border-radius: 50%; width: 120px; height: 120px; object-fit: cover; border: 3px solid #667eea; box-shadow: 0 4px 12px rgba(102,126,234,0.3);" />
+</div>
+
 ## 👋 你好
 
 我是**红齐**，一个对技术和产品充满好奇心的人。
@@ -43,3 +47,4 @@ type: "about"
     <p style="margin-top: 8px; color: #1677ff; font-weight: bold;">支付宝</p>
   </div>
 </div>
+
