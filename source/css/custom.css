@@ -101,6 +101,21 @@
   border-radius: 10px !important;
 }
 
+/* 导航栏 Logo 头像 */
+#site-name::before {
+  content: none;
+}
+#nav .site-page:first-child img,
+#nav #site-name img,
+.nav-logo img {
+  border-radius: 50%;
+  height: 28px;
+  width: 28px;
+  margin-right: 6px;
+  vertical-align: middle;
+  object-fit: cover;
+}
+
 /* 滚动条美化 */
 ::-webkit-scrollbar {
   width: 8px;
@@ -115,6 +130,7 @@
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 
 
 
