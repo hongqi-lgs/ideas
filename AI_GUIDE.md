@@ -1,0 +1,198 @@
+# AI 指导文档 — Ideas 博客项目
+
+> 本文档供 AI 助手接手此项目时参考，记录了博客写作规则、项目结构和注意事项。
+
+---
+
+## 📁 项目结构
+
+```
+ideas/
+├── _config.yml                # Hexo 站点配置
+├── _config.butterfly.yml      # Butterfly 主题配置
+├── source/
+│   ├── _posts/                # 文章目录（中英文都放这里）
+│   ├── about/index.md         # 关于页
+│   ├── tags/index.md          # 标签页
+│   ├── categories/index.md    # 分类页
+│   ├── images/                # 图片资源（打赏二维码等）
+│   └── css/custom.css         # 自定义样式
+├── scripts/
+│   └── filter-lang.js         # 首页语言过滤脚本（排除 English 分类）
+├── scaffolds/                 # 文章模板
+├── package.json
+└── AI_GUIDE.md                # 本文档
+```
+
+---
+
+## ✍️ 写文章规则
+
+### 1. 双语文章（必须同时生成中英文）
+
+每篇文章需要 **中文版 + 英文版** 两个文件，放在同一个 `source/_posts/` 目录下。
+
+**命名规则**：
+- 中文版：`文章名.md`（如 `why-blog.md`）
+- 英文版：`文章名-en.md`（如 `why-blog-en.md`）
+
+### 2. Front-matter 规范
+
+**中文文章** front-matter 示例：
+
+```yaml
+---
+title: 为什么要写博客
+date: 2026-02-28 12:00:00
+tags:
+  - 随想
+  - 写作
+categories:
+  - 随想
+cover:
+description: 在信息爆炸的时代，为什么还要写博客？这是我的三个理由。
+---
+```
+
+**英文文章** front-matter 示例：
+
+```yaml
+---
+title: Why Blog?
+date: 2026-02-28 12:00:00
+tags:
+  - Thoughts
+  - Writing
+  - English
+categories:
+  - English
+cover:
+description: In the age of information overload, why still blog? Here are my three reasons.
+lang: en
+---
+```
+
+### ⚠️ 关键规则
+
+| 规则 | 说明 |
+|------|------|
+| 英文文章必须加 `categories: [English]` | 首页过滤脚本依赖此分类来排除英文文章 |
+| 英文文章必须加 `lang: en` | 标记文章语言 |
+| 英文文章 tags 中加 `English` | 方便按标签筛选 |
+| 中文文章 **不要** 加 `English` 分类 | 否则会被首页过滤掉 |
+| `date` 字段中英文保持一致 | 方便对应同一篇文章 |
+
+### 3. 首页过滤机制
+
+`scripts/filter-lang.js` 自定义了 Hexo 的 index generator：
+- **首页**（`/`）只显示 **非 English 分类** 的文章（即中文文章）
+- **English 分类页**（`/categories/English/`）只显示英文文章
+- **归档、标签页** 显示所有文章（不过滤）
+- **侧边栏"最新文章"** 是全站级别的，会同时显示中英文（这是正常的）
+
+### 4. 未来扩展更多语言
+
+如果要支持日语、韩语等：
+1. 创建对应分类（如 `Japanese`）
+2. 文章 front-matter 加 `categories: [Japanese]`、`lang: ja`
+3. 在 `scripts/filter-lang.js` 中把新语言分类加入排除列表
+4. 在 `_config.butterfly.yml` 的 `menu` 中加入新语言入口
+
+---
+
+## 🚀 常用命令
+
+```bash
+cd ideas
+
+# 新建文章
+npx hexo new "文章标题"
+
+# 本地预览
+npx hexo server
+
+# 生成静态文件
+npx hexo clean && npx hexo generate
+
+# 部署到 GitHub Pages
+cd public
+rm -rf .git
+git init && git checkout -b gh-pages
+git add -A && git commit -m "deploy"
+git remote add origin git@github.com:hongqi-lgs/ideas.git
+git push -f origin gh-pages
+cd ..
+
+# 推送源码
+git add -A && git commit -m "update" && git push origin main
+```
+
+---
+
+## ⚠️ 注意事项
+
+### 图片路径
+
+- 图片放在 `source/images/` 目录
+- 在 `_config.butterfly.yml` 中引用图片时，**不要加 `/ideas/` 前缀**
+- ✅ 正确：`/images/wx.jpg`
+- ❌ 错误：`/ideas/images/wx.jpg`（Hexo 的 `root: /ideas/` 会自动拼接前缀）
+
+### 包管理
+
+- 使用 **pnpm**（不要用 npm，有缓存权限问题）
+- 安装依赖：`pnpm install`
+- 安装新插件：`pnpm add 插件名`
+
+### 主题配置要点
+
+| 配置项 | 当前值 | 说明 |
+|--------|--------|------|
+| `disable_top_img` | `true` | 所有页面禁用顶部大图（用户明确要求） |
+| `busuanzi` | 全部 `true` | 不蒜子访问量统计 |
+| `local_search` | `enable: true` | 本地全文搜索 |
+| `darkmode` | `enable: true` | 暗色模式切换 |
+| `reward` | `enable: true` | 文章底部打赏（微信+支付宝） |
+| `inject.head` | 引入 custom.css | 自定义样式 |
+
+### 自定义样式
+
+`source/css/custom.css` 包含：
+- 导航栏紫蓝渐变背景
+- Footer 同色渐变背景
+- 文章卡片圆角阴影
+- 暗色模式全套适配
+- 滚动条美化
+
+修改样式后需要重新 `hexo generate` 并部署。
+
+### 社交链接
+
+在 `_config.butterfly.yml` 的 `social` 中配置：
+```yaml
+social:
+  fab fa-github: https://github.com/hongqi-lgs || Github
+  fab fa-twitter: https://twitter.com/xiaosen_lu || Twitter
+  fab fa-weixin: /about/ || WeChat
+```
+
+### 联系方式
+
+- **微信**：yundiaodiao
+- **Twitter**：@xiaosen_lu
+- **GitHub**：hongqi-lgs
+
+---
+
+## 📋 发布新文章 Checklist
+
+- [ ] 中文版文件：`source/_posts/文章名.md`
+- [ ] 英文版文件：`source/_posts/文章名-en.md`
+- [ ] 英文版 front-matter 包含 `categories: [English]` 和 `lang: en`
+- [ ] 中文版 front-matter **不包含** `English` 分类
+- [ ] 本地预览确认：`npx hexo server`
+- [ ] 构建：`npx hexo clean && npx hexo generate`
+- [ ] 部署 gh-pages 分支
+- [ ] 推送 main 分支
+
+
