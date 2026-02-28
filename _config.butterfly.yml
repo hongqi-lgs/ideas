@@ -199,11 +199,13 @@ inject:
   head:
     - <link rel="stylesheet" href="/ideas/css/custom.css">
   bottom:
+    - <script src="/ideas/js/i18n.js"></script>
 
 # Open Graph
 Open_Graph_meta:
   enable: true
   option:
+
 
 
 
