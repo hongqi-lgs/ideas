@@ -515,9 +515,11 @@
             a.style.display = '';
             var titleEl = a.querySelector('.info-item-2');
             if (titleEl) titleEl.textContent = target.title;
-            // 隐藏摘要内容（因为我们没有翻译后的摘要）
+            // 摘要：语言匹配时保留原始内容，不匹配时隐藏
             var excerptEl = a.querySelector('.info-2');
-            if (excerptEl) excerptEl.style.display = 'none';
+            if (excerptEl) {
+              excerptEl.style.display = isCurrentLangMatch ? '' : 'none';
+            }
           } else {
             // 没有对应的上/下篇，隐藏
             a.style.display = 'none';
@@ -532,6 +534,15 @@
         var href = a.getAttribute('href');
         if (!href) return;
         var info = map[href];
+        // 检查当前链接是否已经是目标语言的文章
+        var alreadyTargetLang = (lang === 'en' && /-en\/?$/.test(href)) ||
+                                 (lang === 'zh-CN' && !/-en\/?$/.test(href));
+        if (alreadyTargetLang) {
+          // 已经是目标语言，保留原始内容（包括摘要）
+          var excerptEl = a.querySelector('.info-2');
+          if (excerptEl) excerptEl.style.display = '';
+          return;
+        }
         if (info && info[targetPathKey]) {
           a.setAttribute('href', info[targetPathKey]);
           var titleEl = a.querySelector('.info-item-2');
@@ -541,7 +552,7 @@
           if (info[targetTitleKey]) {
             a.setAttribute('title', info[targetTitleKey]);
           }
-          // 隐藏摘要
+          // 语言不匹配，隐藏摘要（因为摘要是原始语言的）
           var excerptEl = a.querySelector('.info-2');
           if (excerptEl) excerptEl.style.display = 'none';
         }
@@ -557,6 +568,7 @@
     apply: function () { applyLang(getLang()); }
   };
 })();
+
 
 
 
