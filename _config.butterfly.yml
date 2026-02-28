@@ -198,6 +198,8 @@ reward:
 inject:
   head:
     - <link rel="stylesheet" href="/ideas/css/custom.css">
+    - <script async src="https://www.googletagmanager.com/gtag/js?id=G-5XSBKYB0GR"></script>
+    - <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-5XSBKYB0GR');</script>
   bottom:
     - <script src="/ideas/js/i18n.js"></script>
 
@@ -205,6 +207,7 @@ inject:
 Open_Graph_meta:
   enable: true
   option:
+
 
 
 
