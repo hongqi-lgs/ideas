@@ -308,6 +308,9 @@
       }
     }
 
+    // --- 文章详情页：替换上下篇和相关推荐的链接 ---
+    translatePostLinks(lang);
+
     // --- 首页文章列表语言过滤 ---
     filterPostsByLang(lang);
   }
@@ -440,6 +443,87 @@
     startObserver();
   }
 
+  // --- 文章映射缓存 ---
+  var postMapCache = null;
+  var postMapLoading = false;
+  var postMapCallbacks = [];
+
+  function loadPostMap(callback) {
+    if (postMapCache) {
+      callback(postMapCache);
+      return;
+    }
+    postMapCallbacks.push(callback);
+    if (postMapLoading) return;
+    postMapLoading = true;
+
+    var rootPath = '/ideas/';
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', rootPath + 'post-map.json?v=' + Date.now(), true);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          try {
+            postMapCache = JSON.parse(xhr.responseText);
+          } catch (e) {
+            postMapCache = {};
+          }
+        } else {
+          postMapCache = {};
+        }
+        postMapLoading = false;
+        var cbs = postMapCallbacks.slice();
+        postMapCallbacks = [];
+        cbs.forEach(function (cb) { cb(postMapCache); });
+      }
+    };
+    xhr.send();
+  }
+
+  // 替换上下篇和相关推荐中的文章链接
+  function translatePostLinks(lang) {
+    loadPostMap(function (map) {
+      var targetKey = lang + '_path';
+      var titleKey = lang + '_title';
+
+      // 上下篇导航
+      document.querySelectorAll('.pagination-post .pagination-related').forEach(function (a) {
+        var href = a.getAttribute('href');
+        if (!href) return;
+        var info = map[href];
+        if (info && info[targetKey]) {
+          a.setAttribute('href', info[targetKey]);
+          // 更新标题
+          var titleEl = a.querySelector('.info-item-2');
+          if (titleEl && info[titleKey]) {
+            titleEl.textContent = info[titleKey];
+          }
+          // 更新 title 属性
+          if (info[titleKey]) {
+            a.setAttribute('title', info[titleKey]);
+          }
+        }
+      });
+
+      // 相关推荐
+      document.querySelectorAll('.relatedPosts-list .pagination-related').forEach(function (a) {
+        var href = a.getAttribute('href');
+        if (!href) return;
+        var info = map[href];
+        if (info && info[targetKey]) {
+          a.setAttribute('href', info[targetKey]);
+          var titleEl = a.querySelector('.info-item-2');
+          if (titleEl && info[titleKey]) {
+            titleEl.textContent = info[titleKey];
+          }
+          if (info[titleKey]) {
+            a.setAttribute('title', info[titleKey]);
+          }
+        }
+      });
+    });
+  }
+
   // 暴露全局 API
   window.i18n = {
     getLang: getLang,
@@ -448,6 +532,8 @@
     apply: function () { applyLang(getLang()); }
   };
 })();
+
+
 
 
 
