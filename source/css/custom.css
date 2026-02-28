@@ -60,7 +60,28 @@
   padding: 4px 10px !important;
 }
 
+/* 页脚配色 — 与导航栏渐变呼应 */
+#footer {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #fff !important;
+}
+
+#footer a,
+#footer .copyright,
+#footer .footer-copyright span {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+#footer #busuanzi_container_site_pv,
+#footer #busuanzi_container_site_uv {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
 /* 暗色模式适配 */
+[data-theme="dark"] #footer {
+  background: linear-gradient(135deg, #434975 0%, #4a3566 100%) !important;
+}
+
 [data-theme="dark"] #recent-posts > .recent-post-item {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
 }
@@ -94,6 +115,7 @@
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 
 
 

@@ -26,7 +26,7 @@ highlight_shrink: false
 social:
   fab fa-github: https://github.com/hongqi-lgs || Github
   fab fa-twitter: https://twitter.com/xiaosen_lu || Twitter
-  fab fa-weixin: /ideas/about/ || WeChat
+  fab fa-weixin: /about/ || WeChat
 
 # 头像
 avatar:
@@ -187,10 +187,10 @@ reward:
   enable: true
   text: 觉得有帮助？请我喝杯咖啡 ☕
   QR_code:
-    - img: /ideas/images/wx.jpg
+    - img: /images/wx.jpg
       link:
       text: 微信
-    - img: /ideas/images/zfb.jpg
+    - img: /images/zfb.jpg
       link:
       text: 支付宝
 
@@ -204,6 +204,8 @@ inject:
 Open_Graph_meta:
   enable: true
   option:
+
+
 
 
 
