@@ -103,8 +103,13 @@ theme: butterfly
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
+
+
+
+
+# Deployment
+## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
-  type: ''
-
-
-
+  type: git
+  repo: git@github.com:hongqi-lgs/ideas.git
+  branch: gh-pages
