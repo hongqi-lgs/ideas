@@ -1,0 +1,24 @@
+/* 首页 header 高度缩小 */
+#page-header.full_page {
+  height: 40vh !important;
+  min-height: 300px !important;
+}
+
+#page-header #site-info {
+  padding-top: 0 !important;
+}
+
+/* 首页标题样式优化 */
+#site-info .site-name {
+  font-size: 2.5rem !important;
+}
+
+#site-info .site-subtitle {
+  font-size: 1.2rem !important;
+  margin-top: 0.5rem;
+}
+
+/* 滚动箭头位置调整 */
+#scroll-down {
+  display: none !important;
+}

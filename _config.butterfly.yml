@@ -30,6 +30,12 @@ avatar:
   img: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
   effect: false
 
+# 首页顶部图
+# 禁用首页大图，改为小型 header
+index_img:
+index_site_info_top:
+disable_top_img: false
+
 # 首页文章封面
 cover:
   index_enable: true
@@ -176,8 +182,16 @@ preloader:
   source: 1
   pace_css_url:
 
+# 自定义注入
+inject:
+  head:
+    - <link rel="stylesheet" href="/ideas/css/custom.css">
+  bottom:
+
 # Open Graph
 Open_Graph_meta:
   enable: true
   option:
+
+
 
