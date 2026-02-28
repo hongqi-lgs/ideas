@@ -33,6 +33,16 @@
       'lang_switch': '🌐 English',
       '目录': '目录',
       '搜索': '搜索',
+      'reward_text': '觉得有帮助？请我喝杯咖啡 ☕',
+      'wechat': '微信',
+      'alipay': '支付宝',
+      'post_author': '文章作者: ',
+      'post_link': '文章链接: ',
+      'copyright_notice': '版权声明: ',
+      'copyright_content': '本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://hongqi-lgs.github.io/ideas" target="_blank">红齐 Ideas</a>！',
+      'prev_post': '上一篇',
+      'next_post': '下一篇',
+      'related_posts': '相关推荐',
     },
     'en': {
       '首页': 'Home',
@@ -57,6 +67,16 @@
       'lang_switch': '🌐 中文',
       '目录': 'TOC',
       '搜索': 'Search',
+      'reward_text': 'Found it helpful? Buy me a coffee ☕',
+      'wechat': 'WeChat',
+      'alipay': 'Alipay',
+      'post_author': 'Author: ',
+      'post_link': 'Post Link: ',
+      'copyright_notice': 'Copyright: ',
+      'copyright_content': 'All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> unless otherwise stated. Please credit <a href="https://hongqi-lgs.github.io/ideas" target="_blank">Hongqi Ideas</a>!',
+      'prev_post': 'Previous',
+      'next_post': 'Next',
+      'related_posts': 'Related Posts',
     }
   };
 
@@ -231,6 +251,63 @@
       copyright.innerHTML = '&copy;&nbsp;2026 ' + t['copyright_by'];
     }
 
+    // --- 打赏区域 ---
+    var rewardBtn = document.querySelector('.reward-button');
+    if (rewardBtn) {
+      var icon = rewardBtn.querySelector('i');
+      var iconHtml = icon ? icon.outerHTML : '';
+      rewardBtn.innerHTML = iconHtml + t['reward_text'];
+    }
+    var qrDescs = document.querySelectorAll('.post-qr-code-desc');
+    qrDescs.forEach(function (desc) {
+      var text = desc.textContent.trim();
+      if (text === '微信' || text === 'WeChat') desc.textContent = t['wechat'];
+      if (text === '支付宝' || text === 'Alipay') desc.textContent = t['alipay'];
+    });
+    // 二维码图片 alt 也翻译
+    document.querySelectorAll('.post-qr-code-img').forEach(function (img) {
+      var alt = img.getAttribute('alt') || '';
+      if (alt === '微信' || alt === 'WeChat') img.setAttribute('alt', t['wechat']);
+      if (alt === '支付宝' || alt === 'Alipay') img.setAttribute('alt', t['alipay']);
+    });
+
+    // --- 文章版权区域 ---
+    document.querySelectorAll('.post-copyright-meta').forEach(function (el) {
+      var text = el.textContent.trim();
+      if (text.includes('文章作者') || text.includes('Author')) {
+        el.innerHTML = el.querySelector('i').outerHTML + t['post_author'] + ' ';
+      } else if (text.includes('文章链接') || text.includes('Post Link')) {
+        el.innerHTML = el.querySelector('i').outerHTML + t['post_link'] + ' ';
+      } else if (text.includes('版权声明') || text.includes('Copyright')) {
+        el.innerHTML = el.querySelector('i').outerHTML + t['copyright_notice'] + ' ';
+      }
+    });
+    // 版权声明内容
+    var copyrightInfo = document.querySelector('.post-copyright__notice .post-copyright-info');
+    if (copyrightInfo) {
+      if (lang === 'en') {
+        copyrightInfo.innerHTML = 'All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> unless otherwise stated. Please credit <a href="https://hongqi-lgs.github.io/ideas" target="_blank">Hongqi Ideas</a>!';
+      } else {
+        copyrightInfo.innerHTML = '本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://hongqi-lgs.github.io/ideas" target="_blank">红齐 Ideas</a>！';
+      }
+    }
+
+    // --- 上一篇/下一篇 ---
+    document.querySelectorAll('.pagination-post .info-item-1').forEach(function (el) {
+      var text = el.textContent.trim();
+      if (text === '上一篇' || text === 'Previous') el.textContent = t['prev_post'];
+      if (text === '下一篇' || text === 'Next') el.textContent = t['next_post'];
+    });
+
+    // --- 相关推荐 ---
+    var relatedHeadline = document.querySelector('.relatedPosts .headline span');
+    if (relatedHeadline) {
+      var rText = relatedHeadline.textContent.trim();
+      if (rText === '相关推荐' || rText === 'Related Posts') {
+        relatedHeadline.textContent = t['related_posts'];
+      }
+    }
+
     // --- 首页文章列表语言过滤 ---
     filterPostsByLang(lang);
   }
@@ -371,6 +448,8 @@
     apply: function () { applyLang(getLang()); }
   };
 })();
+
+
 
 
 
