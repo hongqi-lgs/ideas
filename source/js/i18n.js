@@ -483,42 +483,67 @@
   // 替换上下篇和相关推荐中的文章链接
   function translatePostLinks(lang) {
     loadPostMap(function (map) {
-      var targetKey = lang + '_path';
-      var titleKey = lang + '_title';
+      var currentPath = window.location.pathname;
+      var currentEntry = map[currentPath];
 
-      // 上下篇导航
-      document.querySelectorAll('.pagination-post .pagination-related').forEach(function (a) {
-        var href = a.getAttribute('href');
-        if (!href) return;
-        var info = map[href];
-        if (info && info[targetKey]) {
-          a.setAttribute('href', info[targetKey]);
-          // 更新标题
-          var titleEl = a.querySelector('.info-item-2');
-          if (titleEl && info[titleKey]) {
-            titleEl.textContent = info[titleKey];
-          }
-          // 更新 title 属性
-          if (info[titleKey]) {
-            a.setAttribute('title', info[titleKey]);
-          }
+      // --- 上下篇导航：用同语言的 prev/next 完全重建 ---
+      if (currentEntry) {
+        var prevKey = lang === 'en' ? 'prev' : (lang + '_prev');
+        var nextKey = lang === 'en' ? 'next' : (lang + '_next');
+        // 如果当前页面本身就是目标语言，直接用 prev/next
+        // 如果是翻译后的语言，用 {lang}_prev/{lang}_next
+        var isCurrentLangMatch = (lang === 'en' && currentPath.match(/-en\/?$/)) ||
+                                  (lang === 'zh-CN' && !currentPath.match(/-en\/?$/));
+        
+        var targetPrev, targetNext;
+        if (isCurrentLangMatch) {
+          targetPrev = currentEntry.prev;
+          targetNext = currentEntry.next;
+        } else {
+          // 切换语言后，使用对应语言的 prev/next
+          targetPrev = currentEntry[lang + '_prev'] || null;
+          targetNext = currentEntry[lang + '_next'] || null;
         }
-      });
 
-      // 相关推荐
+        var paginationItems = document.querySelectorAll('.pagination-post .pagination-related');
+        paginationItems.forEach(function (a, index) {
+          // Butterfly: 第一个是上一篇(prev)，第二个是下一篇(next)
+          var target = index === 0 ? targetPrev : targetNext;
+          if (target && target.path && target.title) {
+            a.setAttribute('href', target.path);
+            a.setAttribute('title', target.title);
+            a.style.display = '';
+            var titleEl = a.querySelector('.info-item-2');
+            if (titleEl) titleEl.textContent = target.title;
+            // 隐藏摘要内容（因为我们没有翻译后的摘要）
+            var excerptEl = a.querySelector('.info-2');
+            if (excerptEl) excerptEl.style.display = 'none';
+          } else {
+            // 没有对应的上/下篇，隐藏
+            a.style.display = 'none';
+          }
+        });
+      }
+
+      // --- 相关推荐：替换为对应语言版本 ---
+      var targetPathKey = lang + '_path';
+      var targetTitleKey = lang + '_title';
       document.querySelectorAll('.relatedPosts-list .pagination-related').forEach(function (a) {
         var href = a.getAttribute('href');
         if (!href) return;
         var info = map[href];
-        if (info && info[targetKey]) {
-          a.setAttribute('href', info[targetKey]);
+        if (info && info[targetPathKey]) {
+          a.setAttribute('href', info[targetPathKey]);
           var titleEl = a.querySelector('.info-item-2');
-          if (titleEl && info[titleKey]) {
-            titleEl.textContent = info[titleKey];
+          if (titleEl && info[targetTitleKey]) {
+            titleEl.textContent = info[targetTitleKey];
           }
-          if (info[titleKey]) {
-            a.setAttribute('title', info[titleKey]);
+          if (info[targetTitleKey]) {
+            a.setAttribute('title', info[targetTitleKey]);
           }
+          // 隐藏摘要
+          var excerptEl = a.querySelector('.info-2');
+          if (excerptEl) excerptEl.style.display = 'none';
         }
       });
     });
@@ -532,6 +557,7 @@
     apply: function () { applyLang(getLang()); }
   };
 })();
+
 
 
 
