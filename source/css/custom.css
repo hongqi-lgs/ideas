@@ -106,37 +106,54 @@
   content: none;
 }
 #nav .site-page:first-child img,
-/* 导航栏头像 - 圆框包裹 */
-/* 通用头像样式 — 导航栏和关于页复用同一视觉风格 */
-.site-icon,
-.avatar-circle {
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #667eea;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+/* 导航栏头像 - 圆框包裹（高优先级覆盖 Butterfly 默认样式） */
+#nav #blog-info .site-icon {
+  border-radius: 50% !important;
+  width: 32px !important;
+  height: 32px !important;
+  object-fit: cover !important;
+  border: 2px solid #667eea !important;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.35) !important;
+  margin-right: 8px;
+  vertical-align: middle;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.site-icon:hover,
-.avatar-circle:hover {
-  transform: scale(1.08);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.45);
+#nav #blog-info .site-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5) !important;
 }
 
-/* 导航栏头像尺寸 */
-.site-icon {
-  height: 30px;
-  width: 30px;
-  margin-right: 8px;
-  vertical-align: middle;
-}
-
-/* 关于页头像尺寸 */
+/* 关于页头像 — 与导航栏同风格，只是尺寸更大 */
 .avatar-circle {
+  border-radius: 50% !important;
   width: 120px;
   height: 120px;
+  object-fit: cover;
+  border: 3px solid #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
   display: block;
   margin: 0 auto 16px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.avatar-circle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+}
+
+/* 站点标题字体美化 */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap');
+
+#nav .site-name {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, #fff 0%, #e8d5ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* 滚动条美化 */
@@ -153,6 +170,7 @@
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 
 
 
