@@ -107,25 +107,34 @@
 }
 #nav .site-page:first-child img,
 /* 导航栏头像 - 圆框包裹 */
-.site-icon {
+/* 通用头像样式 — 导航栏和关于页复用同一视觉风格 */
+.site-icon,
+.avatar-circle {
   border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.site-icon:hover,
+.avatar-circle:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.45);
+}
+
+/* 导航栏头像尺寸 */
+.site-icon {
   height: 30px;
   width: 30px;
   margin-right: 8px;
   vertical-align: middle;
-  object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* 通用头像样式（复用） */
+/* 关于页头像尺寸 */
 .avatar-circle {
-  border-radius: 50%;
   width: 120px;
   height: 120px;
-  object-fit: cover;
-  border: 3px solid #667eea;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
   display: block;
   margin: 0 auto 16px;
 }
@@ -144,6 +153,7 @@
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 
 
 
