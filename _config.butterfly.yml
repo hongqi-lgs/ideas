@@ -30,7 +30,7 @@ social:
 
 # 头像
 avatar:
-  img: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+  img: /images/avatar.jpg
   effect: false
 
 # 禁用顶部大图
@@ -107,7 +107,7 @@ aside:
       link: https://github.com/hongqi-lgs
   card_announcement:
     enable: true
-    content: 欢迎来到红齐ideas！未来已来，不问前程，顺势而为。
+    content: 欢迎来到红齐 Ideas！未来已来，不问前程，顺势而为。
   card_recent_post:
     enable: true
     limit: 5
@@ -205,6 +205,7 @@ inject:
 Open_Graph_meta:
   enable: true
   option:
+
 
 
 
