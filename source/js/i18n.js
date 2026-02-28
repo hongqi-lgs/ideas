@@ -515,10 +515,15 @@
             a.style.display = '';
             var titleEl = a.querySelector('.info-item-2');
             if (titleEl) titleEl.textContent = target.title;
-            // 摘要：语言匹配时保留原始内容，不匹配时隐藏
-            var excerptEl = a.querySelector('.info-2');
+            // 摘要：用 post-map 中的 excerpt 替换
+            var excerptEl = a.querySelector('.info-2 .info-item-1');
             if (excerptEl) {
-              excerptEl.style.display = isCurrentLangMatch ? '' : 'none';
+              if (target.excerpt) {
+                excerptEl.textContent = target.excerpt;
+                excerptEl.parentElement.style.display = '';
+              } else {
+                excerptEl.parentElement.style.display = 'none';
+              }
             }
           } else {
             // 没有对应的上/下篇，隐藏
@@ -552,7 +557,15 @@
           if (info[targetTitleKey]) {
             a.setAttribute('title', info[targetTitleKey]);
           }
-          // 语言不匹配，隐藏摘要（因为摘要是原始语言的）
+          // 替换摘要为目标语言版本
+          var excerptEl = a.querySelector('.info-2 .info-item-1');
+          var targetExcerptKey = lang + '_excerpt';
+          if (excerptEl && info[targetExcerptKey]) {
+            excerptEl.textContent = info[targetExcerptKey];
+            var parentEl = a.querySelector('.info-2');
+            if (parentEl) parentEl.style.display = '';
+          } else if (excerptEl) {
+            // 没有翻译摘要，隐藏
           var excerptEl = a.querySelector('.info-2');
           if (excerptEl) excerptEl.style.display = 'none';
         }
@@ -568,6 +581,9 @@
     apply: function () { applyLang(getLang()); }
   };
 })();
+
+
+
 
 
 

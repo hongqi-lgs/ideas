@@ -25,8 +25,11 @@ hexo.extend.generator.register('post-map', function (locals) {
       (post.categories && post.categories.toArray().some(c => c.name === 'English'));
     const lang = isEnglish ? 'en' : 'zh-CN';
     const date = post.date ? post.date.valueOf() : 0;
+    // 提取摘要（纯文本，前200字符）
+    const rawContent = (post.excerpt || post.content || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    const excerpt = rawContent.substring(0, 200);
 
-    const info = { path, title, lang, date, slug };
+    const info = { path, title, lang, date, slug, excerpt };
     allPosts.push(info);
 
     // 提取 base slug（去掉 -en 后缀）
@@ -41,14 +44,14 @@ hexo.extend.generator.register('post-map', function (locals) {
   const zhPosts = allPosts.filter(p => p.lang === 'zh-CN').sort((a, b) => b.date - a.date);
   const enPosts = allPosts.filter(p => p.lang === 'en').sort((a, b) => b.date - a.date);
 
-  // 为每个语言组计算 prev/next（同语言内的上下篇）
+  // 为每个语言组计算 prev/next（同语言内的上下篇，含摘要）
   function buildPrevNext(sortedPosts) {
     const result = {};
     for (let i = 0; i < sortedPosts.length; i++) {
       const current = sortedPosts[i];
       result[current.path] = {
-        prev: i > 0 ? { path: sortedPosts[i - 1].path, title: sortedPosts[i - 1].title } : null,
-        next: i < sortedPosts.length - 1 ? { path: sortedPosts[i + 1].path, title: sortedPosts[i + 1].title } : null
+        prev: i > 0 ? { path: sortedPosts[i - 1].path, title: sortedPosts[i - 1].title, excerpt: sortedPosts[i - 1].excerpt } : null,
+        next: i < sortedPosts.length - 1 ? { path: sortedPosts[i + 1].path, title: sortedPosts[i + 1].title, excerpt: sortedPosts[i + 1].excerpt } : null
       };
     }
     return result;
@@ -69,9 +72,11 @@ hexo.extend.generator.register('post-map', function (locals) {
     if (post.lang === 'zh-CN' && group.en) {
       entry.en_path = group.en.path;
       entry.en_title = group.en.title;
+      entry.en_excerpt = group.en.excerpt || '';
     } else if (post.lang === 'en' && group['zh-CN']) {
       entry['zh-CN_path'] = group['zh-CN'].path;
       entry['zh-CN_title'] = group['zh-CN'].title;
+      entry['zh-CN_excerpt'] = group['zh-CN'].excerpt || '';
     }
 
     // 同语言 prev/next
@@ -104,5 +109,7 @@ hexo.extend.generator.register('post-map', function (locals) {
     data: JSON.stringify(map)
   };
 });
+
+
 
 
