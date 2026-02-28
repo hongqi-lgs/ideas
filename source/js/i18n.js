@@ -232,7 +232,7 @@
 
       var text = a.textContent.trim();
       var href = a.getAttribute('href') || '';
-      if (text.includes('English') || text.includes('中文') || href.includes('void(0)') || a.querySelector('.fa-language')) {
+      if (text.includes('English') || text.includes('中文') || a.querySelector('.fa-language')) {
         a.setAttribute('data-i18n-role', 'lang-switch');
         a.setAttribute('data-i18n-bound', '1');
         a.addEventListener('click', function (e) {
@@ -320,6 +320,7 @@
     apply: function () { applyLang(getLang()); }
   };
 })();
+
 
 
 
