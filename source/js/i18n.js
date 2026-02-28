@@ -85,7 +85,16 @@
   function toggleLang() {
     var current = getLang();
     var next = current === 'zh-CN' ? 'en' : 'zh-CN';
-    setLang(next);
+    localStorage.setItem(STORAGE_KEY, next);
+    // 切换语言时跳转到对应的文章列表页
+    var root = '/ideas/';
+    if (next === 'en') {
+      // 切换到英文 → 跳转到英文分类页
+      window.location.href = root + 'categories/English/';
+    } else {
+      // 切换到中文 → 跳转到首页
+      window.location.href = root;
+    }
   }
 
   // 核心：应用语言到所有 UI 元素
@@ -276,5 +285,6 @@
     apply: function () { applyLang(getLang()); }
   };
 })();
+
 
 
