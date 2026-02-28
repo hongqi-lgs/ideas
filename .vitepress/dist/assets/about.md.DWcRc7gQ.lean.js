@@ -1,1 +1,0 @@
-import{_ as e,o as t,c as r,ag as o}from"./chunks/framework.BfTy0ITm.js";const c=JSON.parse('{"title":"关于","description":"","frontmatter":{},"headers":[],"relativePath":"about.md","filePath":"about.md"}'),s={name:"about.md"};function i(n,a,l,h,u,d){return t(),r("div",null,[...a[0]||(a[0]=[o("",8)])])}const b=e(s,[["render",i]]);export{c as __pageData,b as default};
