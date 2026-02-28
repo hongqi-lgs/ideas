@@ -1,20 +1,21 @@
 /**
  * i18n 国际化脚本 — 小森ideas
  * 支持中英文自动/手动切换
+ * 根据浏览器语言自动检测，支持手动切换，localStorage 持久化
  */
 (function () {
   'use strict';
 
+  var STORAGE_KEY = 'ideas-lang';
+
   // 翻译映射
   var translations = {
     'zh-CN': {
-      // 菜单
       '首页': '首页',
       '归档': '归档',
       '标签': '标签',
       '分类': '分类',
       '关于': '关于',
-      // 侧边栏
       '公告': '公告',
       '最新文章': '最新文章',
       '网站信息': '网站信息',
@@ -25,16 +26,12 @@
       '文章': '文章',
       '标签_stat': '标签',
       '分类_stat': '分类',
-      // 作者卡片
       '签名': '未来已来，不问前程，顺势而为。',
       '公告内容': '欢迎来到我的博客！记录想法、技术与生活。',
-      // footer
       'copyright_by': 'By 红齐',
-      // 文章元信息
       '发表于': '发表于',
-      // 语言切换按钮
       'lang_switch': '🌐 English',
-      // 搜索
+      '目录': '目录',
       '搜索': '搜索',
     },
     'en': {
@@ -58,189 +55,226 @@
       'copyright_by': 'By Hongqi',
       '发表于': 'Posted on',
       'lang_switch': '🌐 中文',
+      '目录': 'TOC',
       '搜索': 'Search',
     }
   };
 
-  var STORAGE_KEY = 'ideas-lang';
+  // 双向查找表：任意文本 → 翻译 key
+  var textToKey = {};
+  Object.keys(translations).forEach(function (lang) {
+    var t = translations[lang];
+    Object.keys(t).forEach(function (key) {
+      textToKey[t[key]] = key;
+    });
+  });
 
-  // 获取当前语言
   function getLang() {
     var stored = localStorage.getItem(STORAGE_KEY);
     if (stored && translations[stored]) return stored;
-    // 自动检测浏览器语言
     var browserLang = (navigator.language || navigator.userLanguage || '').toLowerCase();
     if (browserLang.startsWith('zh')) return 'zh-CN';
     return 'en';
   }
 
-  // 设置语言
   function setLang(lang) {
     localStorage.setItem(STORAGE_KEY, lang);
     applyLang(lang);
   }
 
-  // 切换语言
   function toggleLang() {
     var current = getLang();
     var next = current === 'zh-CN' ? 'en' : 'zh-CN';
     setLang(next);
   }
 
-  // 安全替换文本（保留子元素）
-  function replaceText(el, newText) {
-    // 找到第一个纯文本节点替换
-    for (var i = 0; i < el.childNodes.length; i++) {
-      var node = el.childNodes[i];
-      if (node.nodeType === 3 && node.textContent.trim()) {
-        node.textContent = newText;
-        return true;
-      }
-    }
-    return false;
-  }
-
-  // 应用语言
+  // 核心：应用语言到所有 UI 元素
   function applyLang(lang) {
     var t = translations[lang];
     if (!t) return;
 
     document.documentElement.setAttribute('data-lang', lang);
 
-    // 1. 菜单项（桌面 + 移动端侧边栏）
+    // --- 菜单项 ---
+    var menuSelectors = '.menus_item a span, #sidebar-menus .menus_item a span';
     var menuMap = {
-      '首页': t['首页'], 'Home': t['首页'],
-      '归档': t['归档'], 'Archives': t['归档'],
-      '标签': t['标签'], 'Tags': t['标签'],
-      '分类': t['分类'], 'Categories': t['分类'],
-      '关于': t['关于'], 'About': t['关于'],
+      '首页': true, 'Home': true,
+      '归档': true, 'Archives': true,
+      '标签': true, 'Tags': true,
+      '分类': true, 'Categories': true,
+      '关于': true, 'About': true,
     };
-
-    var menuLinks = document.querySelectorAll('.menus_item a span, #sidebar-menus .menus_item a span');
-    menuLinks.forEach(function (span) {
+    document.querySelectorAll(menuSelectors).forEach(function (span) {
       var text = span.textContent.trim();
-      if (menuMap[text]) {
-        span.textContent = ' ' + menuMap[text];
+      var key = textToKey[text];
+      if (key && menuMap[translations['zh-CN'][key]]) {
+        span.textContent = ' ' + t[key];
       }
     });
 
-    // 2. 语言切换按钮
-    var langBtns = document.querySelectorAll('[data-i18n-role="lang-switch"]');
-    langBtns.forEach(function (btn) {
+    // --- 语言切换按钮 ---
+    document.querySelectorAll('[data-i18n-role="lang-switch"]').forEach(function (btn) {
       var span = btn.querySelector('span');
       if (span) span.textContent = ' ' + t['lang_switch'];
     });
 
-    // 3. 侧边栏标题
-    var headlineMap = {
-      '公告': t['公告'], 'Announcement': t['公告'],
-      '最新文章': t['最新文章'], 'Recent Posts': t['最新文章'],
-      '网站信息': t['网站信息'], 'Site Info': t['网站信息'],
-    };
-    var headlines = document.querySelectorAll('.item-headline span');
-    headlines.forEach(function (span) {
+    // --- 侧边栏标题 ---
+    var headlineKeys = { '公告': true, '最新文章': true, '网站信息': true, '目录': true,
+      'Announcement': true, 'Recent Posts': true, 'Site Info': true, 'TOC': true };
+    document.querySelectorAll('.item-headline span').forEach(function (span) {
       var text = span.textContent.trim();
-      if (headlineMap[text]) {
-        span.textContent = headlineMap[text];
+      if (headlineKeys[text]) {
+        var key = textToKey[text];
+        if (key && t[key]) span.textContent = t[key];
       }
     });
 
-    // 4. 作者描述
+    // --- 分类/标签/归档 卡片标题 ---
+    var cardKeys = { '分类': true, '标签': true, '归档': true,
+      'Categories': true, 'Tags': true, 'Archives': true };
+    document.querySelectorAll('.card-categories .item-headline span, .card-tag-cloud .item-headline span, .card-archives .item-headline span').forEach(function (span) {
+      var text = span.textContent.trim();
+      if (cardKeys[text]) {
+        var key = textToKey[text];
+        if (key && t[key]) span.textContent = t[key];
+      }
+    });
+
+    // --- 作者描述 ---
     var authorDesc = document.querySelector('.author-info-description');
     if (authorDesc) authorDesc.textContent = t['签名'];
 
-    // 5. 公告内容
+    // --- 公告内容 ---
     var announcement = document.querySelector('.announcement_content');
     if (announcement) announcement.textContent = t['公告内容'];
 
-    // 6. 站点统计标签（文章/标签/分类）
-    var statHeadlines = document.querySelectorAll('.site-data .headline');
-    var statMap = {
-      '文章': t['文章'], 'Posts': t['文章'],
-      '标签': t['标签_stat'], 'Tags': t['标签_stat'],
-      '分类': t['分类_stat'], 'Categories': t['分类_stat'],
-    };
-    statHeadlines.forEach(function (el) {
-      var text = el.textContent.trim();
-      if (statMap[text]) el.textContent = statMap[text];
+    // --- 站点统计 (文章/标签/分类) ---
+    var statOrder = ['文章', '标签_stat', '分类_stat'];
+    var statEls = document.querySelectorAll('.site-data .headline');
+    statEls.forEach(function (el, i) {
+      if (statOrder[i] && t[statOrder[i]]) {
+        el.textContent = t[statOrder[i]];
+      }
     });
 
-    // 7. 网站信息项
-    var webinfoItems = document.querySelectorAll('.webinfo-item .item-name');
-    var webinfoMap = {
-      '文章数目 :': t['文章数目'] + ' :',
-      'Posts :': t['文章数目'] + ' :',
-      '本站访客数 :': t['本站访客数'] + ' :',
-      'Visitors :': t['本站访客数'] + ' :',
-      '本站总浏览量 :': t['本站总浏览量'] + ' :',
-      'Page Views :': t['本站总浏览量'] + ' :',
-      '最后更新时间 :': t['最后更新时间'] + ' :',
-      'Last Updated :': t['最后更新时间'] + ' :',
-    };
-    webinfoItems.forEach(function (el) {
-      var text = el.textContent.trim();
-      if (webinfoMap[text]) el.textContent = webinfoMap[text];
+    // --- 网站信息项 ---
+    var webinfoOrder = ['文章数目', '本站访客数', '本站总浏览量', '最后更新时间'];
+    var webinfoEls = document.querySelectorAll('.webinfo-item .item-name');
+    webinfoEls.forEach(function (el, i) {
+      if (webinfoOrder[i] && t[webinfoOrder[i]]) {
+        el.textContent = t[webinfoOrder[i]] + ' :';
+      }
     });
 
-    // 8. 文章元信息"发表于"
-    var metaLabels = document.querySelectorAll('.article-meta-label');
-    metaLabels.forEach(function (el) {
+    // --- 文章元信息 "发表于" ---
+    document.querySelectorAll('.article-meta-label').forEach(function (el) {
       var text = el.textContent.trim();
       if (text === '发表于' || text === 'Posted on') {
         el.textContent = t['发表于'];
       }
     });
 
-    // 9. 分类标题（Butterfly 的分类/标签卡片标题）
-    var cardTitles = document.querySelectorAll('.card-categories .item-headline span, .card-tag-cloud .item-headline span, .card-archives .item-headline span');
-    var cardTitleMap = {
-      '分类': t['分类'], 'Categories': t['分类'],
-      '标签': t['标签'], 'Tags': t['标签'],
-      '归档': t['归档'], 'Archives': t['归档'],
-    };
-    cardTitles.forEach(function (span) {
-      var text = span.textContent.trim();
-      if (cardTitleMap[text]) span.textContent = cardTitleMap[text];
-    });
+    // --- Footer ---
+    var copyright = document.querySelector('#footer .copyright');
+    if (copyright) {
+      copyright.innerHTML = '&copy;&nbsp;2026 ' + t['copyright_by'];
+    }
   }
 
-  // 初始化
-  function init() {
-    var lang = getLang();
+  // 绑定语言切换按钮事件
+  function bindLangSwitch() {
+    document.querySelectorAll('.menus_item a, #sidebar-menus .menus_item a').forEach(function (a) {
+      // 已经绑定过的跳过
+      if (a.getAttribute('data-i18n-bound')) return;
 
-    // 给语言切换菜单项加标记
-    var menuItems = document.querySelectorAll('.menus_item a');
-    menuItems.forEach(function (a) {
       var text = a.textContent.trim();
       if (text.includes('English') || text.includes('中文')) {
         a.setAttribute('data-i18n-role', 'lang-switch');
+        a.setAttribute('data-i18n-bound', '1');
         a.addEventListener('click', function (e) {
           e.preventDefault();
           e.stopPropagation();
           toggleLang();
+          // 关闭移动端侧边栏（如果打开了）
+          var mask = document.getElementById('menu-mask');
+          if (mask) mask.click();
         });
       }
     });
-
-    applyLang(lang);
   }
 
-  // DOM ready 后执行
+  // 完整初始化
+  function fullInit() {
+    bindLangSwitch();
+    applyLang(getLang());
+  }
+
+  // 多次执行确保覆盖 Butterfly 的异步渲染
+  function robustInit() {
+    fullInit();
+    // Butterfly 的 main.js 可能有异步操作，延迟再执行一次
+    setTimeout(fullInit, 300);
+    setTimeout(fullInit, 800);
+    setTimeout(fullInit, 1500);
+  }
+
+  // DOM ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', robustInit);
   } else {
-    init();
+    robustInit();
   }
 
-  // Pjax 兼容（Butterfly 可能使用 pjax）
-  document.addEventListener('pjax:complete', function () {
-    setTimeout(init, 100);
+  // window.onload 兜底（等所有资源加载完）
+  window.addEventListener('load', function () {
+    setTimeout(fullInit, 200);
   });
+
+  // Pjax 兼容
+  document.addEventListener('pjax:complete', function () {
+    setTimeout(robustInit, 100);
+  });
+
+  // MutationObserver：监听 DOM 变化，自动重新应用
+  // 只监听侧边栏和菜单区域的变化
+  var observerTimer = null;
+  var observer = new MutationObserver(function () {
+    // 防抖：DOM 频繁变化时不要每次都执行
+    if (observerTimer) clearTimeout(observerTimer);
+    observerTimer = setTimeout(function () {
+      bindLangSwitch();
+      applyLang(getLang());
+    }, 200);
+  });
+
+  // 开始观察
+  function startObserver() {
+    var targets = [
+      document.getElementById('nav'),
+      document.getElementById('aside-content'),
+      document.getElementById('sidebar'),
+      document.getElementById('footer')
+    ];
+    targets.forEach(function (target) {
+      if (target) {
+        observer.observe(target, { childList: true, subtree: true, characterData: true });
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startObserver);
+  } else {
+    startObserver();
+  }
 
   // 暴露全局 API
   window.i18n = {
     getLang: getLang,
     setLang: setLang,
-    toggleLang: toggleLang
+    toggleLang: toggleLang,
+    apply: function () { applyLang(getLang()); }
   };
 })();
+
+
