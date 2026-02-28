@@ -22,6 +22,7 @@ type: "about"
 | **微信** | `yundiaodiao` |
 | **Twitter** | [@xiaosen_lu](https://twitter.com/xiaosen_lu) |
 | **GitHub** | [hongqi-lgs](https://github.com/hongqi-lgs) |
+| **邮箱** | [550175214@qq.com](mailto:550175214@qq.com) |
 
 ## 🔗 项目
 
@@ -33,4 +34,5 @@ type: "about"
 如果我的文章对你有帮助，欢迎请我喝杯咖啡～
 
 文章底部有微信和支付宝打赏码 🙏
+
 

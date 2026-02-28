@@ -99,7 +99,7 @@ aside:
     category: true
   card_author:
     enable: true
-    description: 想法、技术与生活
+    description: 未来已来，不问前程，顺势而为。
     button:
       enable: true
       icon: fab fa-github
@@ -107,7 +107,7 @@ aside:
       link: https://github.com/hongqi-lgs
   card_announcement:
     enable: true
-    content: 欢迎来到我的博客！记录想法、技术与生活。
+    content: 欢迎来到小森ideas！未来已来，不问前程，顺势而为。
   card_recent_post:
     enable: true
     limit: 5
@@ -204,6 +204,8 @@ inject:
 Open_Graph_meta:
   enable: true
   option:
+
+
 
 
 
