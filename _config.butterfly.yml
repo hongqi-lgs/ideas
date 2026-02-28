@@ -27,6 +27,7 @@ social:
   fab fa-github: https://github.com/hongqi-lgs || Github
   fab fa-twitter: https://twitter.com/xiaosen_lu || Twitter
   fab fa-weixin: /about/ || WeChat
+  fas fa-rss: /ideas/atom.xml || RSS
 
 # 头像
 avatar:
@@ -207,6 +208,7 @@ inject:
 Open_Graph_meta:
   enable: true
   option:
+
 
 
 
