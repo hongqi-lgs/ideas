@@ -1,4 +1,6 @@
-node_modules
-.vitepress/cache
-.vitepress/dist
-
+node_modules/
+public/
+.deploy*/
+db.json
+*.log
+.DS_Store
