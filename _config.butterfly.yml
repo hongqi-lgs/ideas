@@ -14,7 +14,7 @@ menu:
   标签: /tags/ || fas fa-tags
   分类: /categories/ || fas fa-folder-open
   关于: /about/ || fas fa-heart
-  🌐 English: /categories/English/ || fas fa-language
+  🌐 English: javascript:void(0); || fas fa-language
 
 # 代码块
 highlight_theme: mac light
@@ -205,6 +205,7 @@ inject:
 Open_Graph_meta:
   enable: true
   option:
+
 
 
 
