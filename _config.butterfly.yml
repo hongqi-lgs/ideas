@@ -199,6 +199,7 @@ reward:
 inject:
   head:
     - <link rel="stylesheet" href="/css/custom.css">
+    - <script>if(window.location.pathname.startsWith('/ideas/')){var p=window.location.pathname.replace('/ideas/','/');window.location.replace(window.location.origin+p+window.location.search+window.location.hash);}</script>
     - <script async src="https://www.googletagmanager.com/gtag/js?id=G-5XSBKYB0GR"></script>
     - <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-5XSBKYB0GR');</script>
   bottom:
