@@ -27,7 +27,7 @@ social:
   fab fa-github: https://github.com/hongqi-lgs || Github
   fab fa-twitter: https://twitter.com/xiaosen_lu || Twitter
   fab fa-weixin: /about/ || WeChat
-  fas fa-rss: /ideas/atom.xml || RSS
+  fas fa-rss: /atom.xml || RSS
 
 # 头像
 avatar:
@@ -84,7 +84,7 @@ footer:
   owner:
     enable: true
     since: 2026
-  custom_text: '<a href="/ideas/privacy-policy/">隐私政策</a> | <a href="/ideas/privacy-policy/">Privacy Policy</a>'
+  custom_text: '<a href="/privacy-policy/">隐私政策</a> | <a href="/privacy-policy/">Privacy Policy</a>'
   copyright: true
 
 # 侧边栏
@@ -198,11 +198,11 @@ reward:
 # 自定义注入
 inject:
   head:
-    - <link rel="stylesheet" href="/ideas/css/custom.css">
+    - <link rel="stylesheet" href="/css/custom.css">
     - <script async src="https://www.googletagmanager.com/gtag/js?id=G-5XSBKYB0GR"></script>
     - <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-5XSBKYB0GR');</script>
   bottom:
-    - <script src="/ideas/js/i18n.js"></script>
+    - <script src="/js/i18n.js"></script>
 
 # Open Graph
 Open_Graph_meta:
