@@ -44,20 +44,19 @@ jobs:
           npm run clean
           npm run build
 
-      # 5. 部署到GitHub Pages（使用简单可靠的配置）
+      # 5. 部署到GitHub Pages（使用force_orphan解决权限问题）
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
           publish_branch: gh-pages
+          force_orphan: true
           commit_message: |
             Deploy: ${{ github.sha }}
             
             Auto-deploy from GitHub Actions
             Triggered by @${{ github.actor }}
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
 
       # 6. 输出成功信息
       - name: Success message
