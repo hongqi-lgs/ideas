@@ -5,134 +5,59 @@ on:
     branches:
       - main
     paths:
-      - 'source/_posts/**'      # 文章变化时触发
-      - '_config.yml'           # 配置变化时触发
-      - '_config.butterfly.yml' # 主题配置变化时触发
-      - 'scaffolds/**'          # 模板变化时触发
-      - 'package.json'          # 依赖变化时触发
-  workflow_dispatch:            # 允许手动触发
-
-# 设置权限
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-
-# 并发控制：防止多个工作流同时运行
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
+      - 'source/_posts/**'
+      - '_config.yml'
+      - '_config.butterfly.yml'
+      - 'scaffolds/**'
+      - 'package.json'
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
-      # 1. 检出代码（包含子模块）
+      # 1. 检出代码
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      # 2. 设置Node.js环境（使用与项目兼容的版本）
+      # 2. 设置Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'  # Hexo 8.x 兼容Node.js 14+
-          cache: 'npm'        # 启用npm缓存加速构建
+          node-version: '18'
 
-      # 3. 安装依赖（使用ci模式确保一致性）
+      # 3. 安装依赖（不使用缓存避免锁文件问题）
       - name: Install dependencies
-        run: |
-          npm ci --prefer-offline --no-audit --progress=false
-          # 如果npm ci失败，回退到npm install
-          if [ $? -ne 0 ]; then
-            echo "npm ci failed, falling back to npm install"
-            npm install --no-audit --progress=false
-          fi
+        run: npm install
 
-      # 4. 清理并构建静态网站
+      # 4. 清理并构建
       - name: Build Hexo site
         run: |
           npm run clean
           npm run build
-        env:
-          NODE_ENV: production
 
-      # 5. 验证构建结果
-      - name: Validate build output
-        run: |
-          if [ ! -d "public" ]; then
-            echo "Error: public directory not found after build"
-            exit 1
-          fi
-          
-          # 检查是否有index.html
-          if [ ! -f "public/index.html" ]; then
-            echo "Error: index.html not found in public directory"
-            exit 1
-          fi
-          
-          echo "Build validation passed"
-          ls -la public/ | head -10
-
-      # 6. 设置部署用户（用于提交记录）
-      - name: Setup Git
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "github-actions@github.com"
-
-      # 7. 部署到GitHub Pages
+      # 5. 部署到GitHub Pages（使用简单可靠的配置）
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
           publish_branch: gh-pages
-          # 保留历史提交记录
-          keep_files: false
-          # 强制推送（确保部署成功）
-          force_orphan: false
-          # 提交信息
           commit_message: |
             Deploy: ${{ github.sha }}
             
-            Built from commit ${{ github.sha }}
+            Auto-deploy from GitHub Actions
             Triggered by @${{ github.actor }}
-          # 用户信息
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          # 部署完成后触发页面构建
-          enable_jekyll: false
-          allow_empty_commit: true
 
-      # 8. 部署状态输出
-      - name: Output deployment status
+      # 6. 输出成功信息
+      - name: Success message
         run: |
-          echo "✅ Deployment completed successfully!"
+          echo "✅ Deployment completed!"
           echo "🌐 Site URL: https://hongqi-lgs.github.io/ideas/"
           echo "📊 Commit: ${{ github.sha }}"
-          echo "👤 Triggered by: @${{ github.actor }}"
-          
-      # 9. 清理缓存（可选）
-      - name: Cleanup
-        if: always()
-        run: |
-          echo "Cleaning up workspace..."
-          # 可以添加清理步骤，但通常不需要
-
-  # 可选的：添加一个简单的健康检查
-  health-check:
-    runs-on: ubuntu-latest
-    needs: build-and-deploy
-    steps:
-      - name: Health check
-        run: |
-          echo "✅ Build and deploy completed successfully"
-          echo "🕒 Time: $(date)"
-          echo "🔗 Site should be available at: https://hongqi-lgs.github.io/ideas/"
