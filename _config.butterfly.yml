@@ -1,6 +1,9 @@
 # Butterfly 主题配置
 # 文档: https://butterfly.js.org/
 
+# Favicon
+favicon: /img/favicon.svg
+
 # 导航栏
 nav:
   logo: /images/avatar.jpg
