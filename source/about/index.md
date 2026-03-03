@@ -28,11 +28,6 @@ type: "about"
 | **GitHub** | [hongqi-lgs](https://github.com/hongqi-lgs) |
 | **邮箱** | [550175214@qq.com](mailto:550175214@qq.com) |
 
-## 🔗 项目
-
-- 🎨 [Luna UI](https://hongqi-lgs.github.io/HQ-UI/) — Vue3 组件库
-- 📝 [红齐 Ideas](https://xiaoxiaduoyan.com) — 你正在看的这个博客
-
 ## ☕ 打赏
 
 如果我的内容对你有帮助，欢迎请我喝杯咖啡～

@@ -29,11 +29,6 @@ This blog is my digital garden, where I document:
 | **GitHub** | [hongqi-lgs](https://github.com/hongqi-lgs) |
 | **Email** | [550175214@qq.com](mailto:550175214@qq.com) |
 
-## 🔗 Projects
-
-- 🎨 [Luna UI](https://hongqi-lgs.github.io/HQ-UI/) — Vue3 Component Library
-- 📝 [Hongqi Ideas](https://xiaoxiaduoyan.com) — This blog you're reading
-
 ## ☕ Support
 
 If you find my content helpful, feel free to buy me a coffee!
