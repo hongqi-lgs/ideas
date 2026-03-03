@@ -5,7 +5,7 @@ type: "about"
 ---
 
 <div style="text-align: center; margin-bottom: 24px;">
-  <img src="/ideas/images/avatar.jpg" alt="红齐" class="avatar-circle" style="border-radius: 50%; width: 120px; height: 120px; object-fit: cover; border: 3px solid #667eea; box-shadow: 0 4px 12px rgba(102,126,234,0.3);" />
+  <img src="/images/avatar.jpg" alt="红齐" class="avatar-circle" style="border-radius: 50%; width: 120px; height: 120px; object-fit: cover; border: 3px solid #667eea; box-shadow: 0 4px 12px rgba(102,126,234,0.3);" />
 </div>
 
 ## 👋 你好
@@ -31,7 +31,7 @@ type: "about"
 ## 🔗 项目
 
 - 🎨 [Luna UI](https://hongqi-lgs.github.io/HQ-UI/) — Vue3 组件库
-- 📝 [红齐 Ideas](https://hongqi-lgs.github.io/ideas/) — 你正在看的这个博客
+- 📝 [红齐 Ideas](https://xiaoxiaduoyan.com) — 你正在看的这个博客
 
 ## ☕ 打赏
 
@@ -39,11 +39,11 @@ type: "about"
 
 <div style="display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin: 20px 0;">
   <div style="text-align: center;">
-    <img src="/ideas/images/wx.jpg" alt="微信打赏" style="width: 200px; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+    <img src="/images/wx.jpg" alt="微信打赏" style="width: 200px; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
     <p style="margin-top: 8px; color: #07c160; font-weight: bold;">微信</p>
   </div>
   <div style="text-align: center;">
-    <img src="/ideas/images/zfb.jpg" alt="支付宝打赏" style="width: 200px; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+    <img src="/images/zfb.jpg" alt="支付宝打赏" style="width: 200px; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
     <p style="margin-top: 8px; color: #1677ff; font-weight: bold;">支付宝</p>
   </div>
 </div>
