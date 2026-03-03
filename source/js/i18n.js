@@ -190,6 +190,23 @@
 
     document.documentElement.setAttribute('data-lang', lang);
 
+    // --- 页面 Title ---
+    var currentTitle = document.title;
+    // 处理不同页面类型的 title
+    if (currentTitle.includes('归档') || currentTitle.includes('Archives')) {
+      document.title = lang === 'en' ? 'Archives - Hongqi Ideas' : '归档 - 红齐 Ideas';
+    } else if (currentTitle.includes('标签') || currentTitle.includes('Tags')) {
+      document.title = lang === 'en' ? 'Tags - Hongqi Ideas' : '标签 - 红齐 Ideas';
+    } else if (currentTitle.includes('分类') || currentTitle.includes('Categories')) {
+      document.title = lang === 'en' ? 'Categories - Hongqi Ideas' : '分类 - 红齐 Ideas';
+    } else if (currentTitle.includes('关于') || currentTitle.includes('About')) {
+      document.title = lang === 'en' ? 'About - Hongqi Ideas' : '关于 - 红齐 Ideas';
+    } else if (currentTitle === '红齐 Ideas' || currentTitle === 'Hongqi Ideas') {
+      // 首页
+      document.title = lang === 'en' ? 'Hongqi Ideas' : '红齐 Ideas';
+    }
+    // 文章详情页的 title 由 post-map 中的数据替换（如果需要）
+
     // --- 菜单项 ---
     var menuSelectors = '.menus_item a span, #sidebar-menus .menus_item a span';
     var menuMap = {
@@ -387,22 +404,8 @@
       }
     });
 
-    // 归档页面文章列表
-    var archiveItems = document.querySelectorAll('#archive .article-sort-item');
-    archiveItems.forEach(function (item) {
-      var link = item.querySelector('a.article-title');
-      if (!link) return;
-      var href = link.getAttribute('href') || '';
-      // 判断是否英文文章：URL 包含 -en/
-      var isEnglish = /-en\/?$/.test(href);
-      if (lang === 'en') {
-        item.style.display = isEnglish ? '' : 'none';
-      } else if (lang === 'zh-CN') {
-        item.style.display = isEnglish ? 'none' : '';
-      } else {
-        item.style.display = isEnglish ? '' : 'none';
-      }
-    });
+    // 归档页面文章列表（使用 post-map 替换标题）
+    translateArchiveLinks(lang);
 
     // 侧边栏最新文章
     var asideItems = document.querySelectorAll('.card-recent-post .aside-list-item');
@@ -639,6 +642,67 @@
           }
         }
       });
+    });
+  }
+
+  // 替换 Archives 页面的文章标题
+  function translateArchiveLinks(lang) {
+    loadPostMap(function (map) {
+      var archiveItems = document.querySelectorAll('#archive .article-sort-item');
+      archiveItems.forEach(function (item) {
+        var link = item.querySelector('a.article-sort-item-title');
+        if (!link) return;
+        var href = link.getAttribute('href') || '';
+        
+        // 判断当前文章是否是英文
+        var isEnglish = /-en\/?$/.test(href);
+        
+        // 如果当前语言和文章语言不匹配，尝试替换
+        if (lang === 'en' && !isEnglish) {
+          // 需要显示英文版
+          var info = map[href];
+          if (info && info.en_path && info.en_title) {
+            link.setAttribute('href', info.en_path);
+            link.textContent = info.en_title;
+            link.setAttribute('title', info.en_title);
+            item.style.display = '';
+          } else {
+            // 没有英文版，隐藏
+            item.style.display = 'none';
+          }
+        } else if (lang === 'zh-CN' && isEnglish) {
+          // 需要显示中文版（去掉 -en 后缀）
+          var zhPath = href.replace(/-en\/?$/, '/');
+          var info = map[zhPath];
+          if (info && info.title) {
+            link.setAttribute('href', zhPath);
+            link.textContent = info.title;
+            link.setAttribute('title', info.title);
+            item.style.display = '';
+          } else {
+            // 没有中文版，隐藏
+            item.style.display = 'none';
+          }
+        } else {
+          // 语言匹配，显示
+          item.style.display = '';
+        }
+      });
+      
+      // 更新归档页标题数量统计
+      var visibleCount = document.querySelectorAll('#archive .article-sort-item:not([style*="display: none"])').length;
+      // 减去年份标题
+      var yearTitles = document.querySelectorAll('#archive .article-sort-item.year').length;
+      visibleCount = Math.max(0, visibleCount - yearTitles);
+      
+      var archiveTitle = document.querySelector('#archive .article-sort-title');
+      if (archiveTitle) {
+        if (lang === 'en') {
+          archiveTitle.textContent = 'All Posts - ' + visibleCount;
+        } else {
+          archiveTitle.textContent = '全部文章 - ' + visibleCount;
+        }
+      }
     });
   }
 
