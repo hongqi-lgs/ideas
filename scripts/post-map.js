@@ -19,7 +19,9 @@ hexo.extend.generator.register('post-map', function (locals) {
 
   posts.forEach(function (post) {
     const slug = post.slug;
-    const path = '/' + hexo.config.root.replace(/^\/|\/$/g, '') + '/' + post.path;
+    // 修复路径：确保不产生双斜杠
+    const root = hexo.config.root.replace(/^\/|\/$/g, '');
+    const path = root ? '/' + root + '/' + post.path : '/' + post.path;
     const title = post.title;
     const isEnglish = slug.endsWith('-en') || 
       (post.categories && post.categories.toArray().some(c => c.name === 'English'));
