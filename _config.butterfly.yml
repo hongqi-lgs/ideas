@@ -28,7 +28,7 @@ highlight_shrink: false
 # 社交链接
 social:
   fab fa-github: https://github.com/hongqi-lgs || Github
-  fab fa-twitter: https://twitter.com/xiaosen_lu || Twitter
+  fab fa-x-twitter: https://twitter.com/xiaosen_lu || X (Twitter)
   fab fa-weixin: /about/ || WeChat
   fas fa-rss: /atom.xml || RSS
 
