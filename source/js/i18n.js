@@ -235,6 +235,24 @@
       }
     });
 
+    // --- 作者名称（红齐 → Hongqi） ---
+    document.querySelectorAll('.author-info-name').forEach(function (el) {
+      if (lang === 'en') {
+        el.textContent = 'Hongqi';
+      } else {
+        el.textContent = '红齐';
+      }
+    });
+
+    // --- 网站标题（红齐 Ideas） ---
+    document.querySelectorAll('.site-name, .nav-site-title .site-name').forEach(function (el) {
+      if (lang === 'en') {
+        el.textContent = 'Hongqi Ideas';
+      } else {
+        el.textContent = '红齐 Ideas';
+      }
+    });
+
     // --- 作者描述 ---
     var authorDesc = document.querySelector('.author-info-description');
     if (authorDesc) authorDesc.textContent = t['签名'];
@@ -244,11 +262,20 @@
     if (announcement) announcement.textContent = t['公告内容'];
 
     // --- 站点统计 (文章/标签/分类) ---
-    var statOrder = ['文章', '标签_stat', '分类_stat'];
-    var statEls = document.querySelectorAll('.site-data .headline');
-    statEls.forEach(function (el, i) {
-      if (statOrder[i] && t[statOrder[i]]) {
-        el.textContent = t[statOrder[i]];
+    // 侧边栏和主导航中的统计项
+    document.querySelectorAll('.site-data a .headline').forEach(function (el) {
+      var text = el.textContent.trim();
+      // 文章
+      if (text === '文章' || text === 'Posts') {
+        el.textContent = t['文章'];
+      }
+      // 标签
+      else if (text === '标签' || text === 'Tags') {
+        el.textContent = t['标签_stat'];
+      }
+      // 分类
+      else if (text === '分类' || text === 'Categories') {
+        el.textContent = t['分类_stat'];
       }
     });
 
@@ -339,7 +366,7 @@
     filterPostsByLang(lang);
   }
 
-  // 根据语言过滤首页文章卡片和侧边栏最新文章
+  // 根据语言过滤首页文章卡片、归档页面和侧边栏最新文章
   function filterPostsByLang(lang) {
     // 首页文章卡片
     var postItems = document.querySelectorAll('.recent-post-item');
@@ -356,6 +383,23 @@
         item.style.display = isEnglish ? 'none' : '';
       } else {
         // 非中文非英文，默认显示英文
+        item.style.display = isEnglish ? '' : 'none';
+      }
+    });
+
+    // 归档页面文章列表
+    var archiveItems = document.querySelectorAll('#archive .article-sort-item');
+    archiveItems.forEach(function (item) {
+      var link = item.querySelector('a.article-title');
+      if (!link) return;
+      var href = link.getAttribute('href') || '';
+      // 判断是否英文文章：URL 包含 -en/
+      var isEnglish = /-en\/?$/.test(href);
+      if (lang === 'en') {
+        item.style.display = isEnglish ? '' : 'none';
+      } else if (lang === 'zh-CN') {
+        item.style.display = isEnglish ? 'none' : '';
+      } else {
         item.style.display = isEnglish ? '' : 'none';
       }
     });
