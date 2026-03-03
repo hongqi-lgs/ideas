@@ -215,7 +215,7 @@ Open_Graph_meta:
 
 # 相关推荐
 related_post:
-  enable: true
+  enable: false  # 禁用，由 scripts/fix-pagination.js 自定义生成
   limit: 6
   date_type: created
 
