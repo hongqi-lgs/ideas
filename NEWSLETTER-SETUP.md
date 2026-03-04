@@ -23,14 +23,17 @@
 
 ### 步骤 1：注册 Buttondown（免费）
 1. 访问：https://buttondown.email/
-2. 使用邮箱注册账号：`hqlgs01@gmail.com`
+2. 使用邮箱注册账号：`luguosheng1314@126.com`
 3. 确认用户名：`luguosheng1314`（已在代码中配置）
-4. 配置订阅确认邮件模板（可选）
+4. 进入 Settings → API，获取 API Key
+5. 配置订阅确认邮件模板（可选）
 
 **免费额度**：
 - 1000 订阅者
 - 无限邮件发送
 - 完全够用
+
+**重要**：复制 API Key（后面需要配置到 GitHub Secrets）
 
 ### 步骤 2：注册 Resend（免费）
 1. 访问：https://resend.com/
@@ -46,11 +49,19 @@
 
 ### 步骤 3：配置 GitHub Secrets
 1. 进入仓库：https://github.com/hongqi-lgs/ideas/settings/secrets/actions
-2. 点击 "New repository secret"
-3. 配置：
+2. 添加两个 Secrets：
+
+**Secret 1: RESEND_API_KEY**
+   - 点击 "New repository secret"
    - **Name**: `RESEND_API_KEY`
-   - **Value**: 粘贴步骤 2 中的 API Key
-4. 保存
+   - **Value**: `re_gQg5ZQzE_4xVwFJrnArLNXypVmHD5zMsT`（步骤 2 中的 Resend API Key）
+   - 保存
+
+**Secret 2: BUTTONDOWN_API_KEY**
+   - 点击 "New repository secret"
+   - **Name**: `BUTTONDOWN_API_KEY`
+   - **Value**: 粘贴步骤 1 中的 Buttondown API Key
+   - 保存
 
 ### 步骤 4：配置 Resend 发件域名（可选但推荐）
 **如果你有自定义域名**（如 `ideas.luguosheng.com`）：
@@ -97,7 +108,23 @@ on:
 
 ## 📋 订阅者管理
 
-### 添加订阅者
+### 自动同步 Buttondown 订阅者（推荐）
+
+**方式 1：手动触发同步**
+1. 访问：https://github.com/hongqi-lgs/ideas/actions/workflows/sync-subscribers.yml
+2. 点击 "Run workflow"
+3. 脚本会自动从 Buttondown 获取订阅者并更新 `subscribers.json`
+
+**方式 2：自动定时同步**
+- 每天北京时间早上 8 点自动同步
+- 无需手动操作
+
+**同步逻辑**：
+- 从 Buttondown 获取所有订阅者
+- 保留本地手动添加的订阅者（标记为 `source: manual`）
+- 合并后更新 `subscribers.json`
+
+### 手动添加订阅者
 编辑文件：`.github/data/subscribers.json`
 
 ```json
@@ -105,14 +132,13 @@ on:
   {
     "email": "user@example.com",
     "name": "User Name",
-    "subscribed_at": "2026-03-04"
+    "subscribed_at": "2026-03-04",
+    "source": "manual"
   }
 ]
 ```
 
-**注意**：
-- Buttondown 的订阅者需要手动同步到这个文件
-- 或者只用这个文件管理"精选订阅者"
+手动添加的订阅者不会被同步脚本删除。
 
 ### 查看发送历史
 文件会自动生成：`.github/data/send-history.json`
@@ -160,15 +186,20 @@ on:
 
 完成配置后，按顺序测试：
 
-1. ☐ Buttondown 注册并确认用户名
-2. ☐ 测试博客侧边栏订阅表单（提交邮箱）
-3. ☐ 检查 Buttondown 后台是否收到订阅
-4. ☐ Resend 注册并获取 API Key
-5. ☐ GitHub Secrets 配置 `RESEND_API_KEY`
-6. ☐ GitHub Actions 手动触发（test_mode=true）
-7. ☐ 检查邮箱收到测试邮件
-8. ☐ 确认邮件样式和链接正常
-9. ☐ 正式发送 Newsletter（test_mode=false）
+1. ☐ Buttondown 注册并确认用户名 `luguosheng1314`
+2. ☐ 获取 Buttondown API Key
+3. ☐ 测试博客侧边栏订阅表单（用你的邮箱 `luguosheng1314@126.com` 测试）
+4. ☐ 检查 Buttondown 后台是否收到订阅
+5. ☐ Resend 已有 API Key（已提供）
+6. ☐ GitHub Secrets 配置：
+   - `RESEND_API_KEY` = `re_gQg5ZQzE_4xVwFJrnArLNXypVmHD5zMsT`
+   - `BUTTONDOWN_API_KEY` = 步骤 2 获取的 Key
+7. ☐ 测试订阅者同步：手动触发 "Sync Buttondown Subscribers" 工作流
+8. ☐ 检查 `subscribers.json` 是否更新
+9. ☐ 测试邮件发送：手动触发 "Send Newsletter"（test_mode=true）
+10. ☐ 检查邮箱 `luguosheng1314@126.com` 收到测试邮件
+11. ☐ 确认邮件样式和链接正常
+12. ☐ 正式发送 Newsletter（test_mode=false）
 
 ## 📊 预期效果
 
