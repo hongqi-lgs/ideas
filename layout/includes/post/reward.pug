@@ -1,0 +1,23 @@
+.post-reward
+  .reward-button
+    i.fas.fa-qrcode
+    = theme.reward.text || _p('donate')
+  .reward-main
+    //- Ko-fi 按钮（国际支持）
+    .post-reward-wrapper
+      a.kofi-button(href='https://ko-fi.com/xiaosen' target='_blank' rel='noopener noreferrer')
+        i.fas.fa-coffee
+        span International Support (Ko-fi)
+    
+    //- 分隔线
+    .reward-separator
+      span Or scan QR code (China)
+    
+    //- 微信/支付宝二维码
+    ul.reward-all
+      each item in theme.reward.QR_code
+        - const clickTo = item.link || item.img
+        li.reward-item
+          a(href=url_for(clickTo) target='_blank')
+            img.post-qr-code-img(src=url_for(item.img) alt=item.text)
+          .post-qr-code-desc=item.text
