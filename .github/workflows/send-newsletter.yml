@@ -1,0 +1,43 @@
+name: Send Newsletter
+
+on:
+  workflow_dispatch:
+    inputs:
+      article_url:
+        description: '文章 URL（可选，留空则发送最新文章）'
+        required: false
+        type: string
+      subject:
+        description: '邮件主题（可选，留空则自动生成）'
+        required: false
+        type: string
+      test_mode:
+        description: '测试模式（只发送给自己）'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Install dependencies
+      run: |
+        npm install rss-parser node-fetch
+    
+    - name: Send newsletter
+      env:
+        RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        ARTICLE_URL: ${{ github.event.inputs.article_url }}
+        SUBJECT: ${{ github.event.inputs.subject }}
+        TEST_MODE: ${{ github.event.inputs.test_mode }}
+      run: node .github/scripts/send-newsletter.js
