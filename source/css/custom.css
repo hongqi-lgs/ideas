@@ -173,18 +173,28 @@
 
 /* ===== 打赏区域优化 ===== */
 
-/* 按钮容器：让两个按钮并排 */
+/* 按钮容器：让两个按钮并排（在弹窗外面） */
 .reward-buttons-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 15px;
   flex-wrap: wrap;
+  margin-bottom: 0 !important;
+  position: relative;
+  z-index: 1;
+}
+
+/* 确保弹窗在按钮下方 */
+.post-reward .reward-main {
+  position: relative;
+  z-index: 0;
 }
 
 /* 原始打赏按钮样式保持不变 */
 .post-reward .reward-button {
   margin: 0 !important;
+  cursor: pointer;
 }
 
 /* 分隔符样式 */
@@ -192,13 +202,15 @@
   color: #999;
   font-size: 14px;
   font-style: italic;
-  padding: 0 10px;
+  padding: 0 5px;
+  user-select: none;
 }
 
 /* Ko-fi 内联按钮样式 */
 .kofi-inline-button {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   padding: 10px 24px;
   background: linear-gradient(135deg, #29abe0 0%, #00b9fe 100%);
   color: #fff !important;
@@ -209,6 +221,7 @@
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(41, 171, 224, 0.3);
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .kofi-inline-button:hover {
@@ -216,10 +229,23 @@
   box-shadow: 0 4px 16px rgba(41, 171, 224, 0.5);
   background: linear-gradient(135deg, #00b9fe 0%, #29abe0 100%);
   color: #fff !important;
+  text-decoration: none !important;
 }
 
 .kofi-inline-button i {
   margin-right: 6px;
+}
+
+/* 小屏幕优化 */
+@media (max-width: 768px) {
+  .reward-buttons-wrapper {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .reward-button-separator {
+    display: none;
+  }
 }
 
 /* 暗色模式适配 */
