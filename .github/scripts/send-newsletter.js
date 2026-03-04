@@ -10,7 +10,8 @@ const path = require('path');
 // 配置
 const RSS_URL = 'https://hongqi-lgs.github.io/ideas/atom.xml';
 const BLOG_URL = 'https://hongqi-lgs.github.io/ideas';
-const FROM_EMAIL = 'newsletter@hongqi-lgs.github.io'; // 如果有自定义域名，改成你的域名
+// 使用 Resend 提供的免费测试域名（或者配置自己的域名）
+const FROM_EMAIL = 'onboarding@resend.dev'; // Resend 免费测试域名
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
 // 发送记录文件
@@ -165,30 +166,30 @@ async function main() {
   const subscribers = JSON.parse(fs.readFileSync(subscribersPath, 'utf8'));
   console.log(`📧 Found ${subscribers.length} subscribers`);
 
+  // 过滤掉无效邮箱
+  const validSubscribers = subscribers.filter(s => s.email && s.email.includes('@'));
+  if (validSubscribers.length < subscribers.length) {
+    console.log(`⚠️  Filtered out ${subscribers.length - validSubscribers.length} invalid emails`);
+  }
+
   // 测试模式：只发送给第一个订阅者（应该是你自己）
   const testMode = process.env.TEST_MODE === 'true';
-  const recipients = testMode ? subscribers.slice(0, 1) : subscribers;
+  const recipients = testMode ? validSubscribers.slice(0, 1) : validSubscribers;
   
   if (testMode) {
     console.log('🧪 TEST MODE: Only sending to first subscriber');
   }
 
-  // 获取文章信息
-  let article;
-  const manualUrl = process.env.ARTICLE_URL;
-
-  if (manualUrl) {
-    // 手动指定文章 URL
-    console.log('📝 Using manually specified article URL');
-    article = {
-      title: process.env.SUBJECT || '新文章更新',
-      link: manualUrl,
-      excerpt: '点击阅读全文查看完整内容。',
-      pubDate: new Date().toISOString()
-    };
+  // 读取生成的 Newsletter 内容
+  const newsletterPath = path.join(__dirname, '../data/newsletter.json');
+  let newsletter;
+  
+  if (fs.existsSync(newsletterPath)) {
+    console.log('📰 Using generated newsletter content');
+    newsletter = JSON.parse(fs.readFileSync(newsletterPath, 'utf8'));
   } else {
-    // 从 RSS 获取最新文章
-    console.log('📡 Fetching latest article from RSS...');
+    // 降级：使用最新文章
+    console.log('📡 Fetching latest article from RSS (fallback)...');
     const parser = new Parser();
     const feed = await parser.parseURL(RSS_URL);
     
@@ -197,30 +198,61 @@ async function main() {
       process.exit(1);
     }
 
-    article = feed.items[0];
-    console.log(`📰 Latest article: ${article.title}`);
-
-    // 检查是否已发送
-    if (isArticleSent(article.link)) {
-      console.log('⚠️  This article has already been sent!');
-      console.log('   To resend, specify the article URL manually.');
-      process.exit(0);
-    }
-
-    // 提取摘要（去除 HTML 标签）
-    if (article.contentSnippet) {
-      article.excerpt = article.contentSnippet.substring(0, 300) + '...';
-    } else if (article.content) {
-      article.excerpt = article.content.replace(/<[^>]*>/g, '').substring(0, 300) + '...';
-    } else {
-      article.excerpt = '点击阅读全文查看完整内容。';
-    }
+    const article = feed.items[0];
+    const excerpt = article.contentSnippet || article.content?.replace(/<[^>]*>/g, '').substring(0, 300) + '...' || '';
+    
+    newsletter = {
+      subject: `新文章：${article.title}`,
+      content: `# ${article.title}\n\n${excerpt}\n\n[阅读全文](${article.link})`,
+      articles: [article]
+    };
   }
 
   // 生成邮件内容
-  const subject = process.env.SUBJECT || `新文章：${article.title}`;
-  const html = generateEmailHTML(article);
-  const text = generateEmailText(article);
+  const subject = newsletter.subject;
+  
+  // 将 Markdown 内容转换为简单 HTML
+  const contentHTML = newsletter.content
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(.+)$/gm, '<p>$1</p>');
+  
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; padding: 30px 0; border-bottom: 2px solid #667eea; }
+    .header h1 { margin: 0; color: #667eea; font-size: 28px; }
+    .content { padding: 30px 0; }
+    h1, h2, h3 { color: #333; }
+    a { color: #667eea; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .footer { border-top: 1px solid #eee; padding-top: 20px; margin-top: 40px; text-align: center; color: #999; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>红齐 Ideas</h1>
+    <p style="color: #666; margin: 10px 0 0 0;">技术·产品·思考</p>
+  </div>
+  <div class="content">
+    ${contentHTML}
+  </div>
+  <div class="footer">
+    <p>💬 回复这封邮件与我交流</p>
+    <p><a href="{{unsubscribe_url}}">取消订阅</a> · <a href="${BLOG_URL}">访问博客</a></p>
+  </div>
+</body>
+</html>
+  `.trim();
+  
+  const text = newsletter.content;
 
   // 发送邮件
   console.log(`\n📤 Sending emails to ${recipients.length} recipients...`);
@@ -247,6 +279,7 @@ async function main() {
 
   // 记录发送（只在非测试模式下记录）
   if (!testMode && successCount > 0) {
+    const article = newsletter.articles[0] || { link: BLOG_URL, title: subject };
     recordSend(article, successCount);
     console.log(`\n📝 Send recorded in history`);
   }

@@ -4,3 +4,8 @@ public/
 db.json
 *.log
 .DS_Store
+
+# Newsletter 敏感数据
+.github/data/subscribers.json
+.github/data/send-history.json
+.env

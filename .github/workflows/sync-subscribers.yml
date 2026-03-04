@@ -26,20 +26,22 @@ jobs:
     - name: Sync subscribers from Buttondown
       env:
         BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
-      run: node .github/scripts/sync-buttondown.js
-    
-    - name: Commit and push changes
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+        node .github/scripts/sync-buttondown.js
         
-        # 检查是否有变化
-        if git diff --quiet .github/data/subscribers.json; then
-          echo "No changes to subscribers.json"
-          exit 0
-        fi
-        
-        git add .github/data/subscribers.json
-        git commit -m "Auto-sync: Update subscribers from Buttondown [skip ci]"
-        git push
+        # 将订阅者数据保存为 GitHub Secret（通过输出）
+        echo "SUBSCRIBERS_COUNT=$(cat .github/data/subscribers.json | jq 'length')" >> $GITHUB_ENV
+    
+    - name: Update subscribers secret
+      uses: gliech/create-github-secret-action@v1
+      with:
+        name: SUBSCRIBERS_DATA
+        value: ${{ steps.sync.outputs.subscribers }}
+        pa_token: ${{ secrets.GITHUB_TOKEN }}
       continue-on-error: true
+    
+    - name: Clean up local file (防止泄露)
+      run: |
+        # 保留空文件占位
+        echo '[]' > .github/data/subscribers.json
+        echo "✅ Cleaned up local subscribers file"

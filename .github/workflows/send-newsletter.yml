@@ -3,14 +3,15 @@ name: Send Newsletter
 on:
   workflow_dispatch:
     inputs:
-      article_url:
-        description: '文章 URL（可选，留空则发送最新文章）'
-        required: false
-        type: string
-      subject:
-        description: '邮件主题（可选，留空则自动生成）'
-        required: false
-        type: string
+      mode:
+        description: 'Newsletter 模式'
+        required: true
+        type: choice
+        options:
+          - latest
+          - weekly
+          - monthly
+        default: latest
       test_mode:
         description: '测试模式（只发送给自己）'
         required: false
@@ -34,10 +35,13 @@ jobs:
       run: |
         npm install rss-parser node-fetch
     
+    - name: Generate newsletter content
+      run: |
+        node .github/scripts/generate-newsletter.js ${{ github.event.inputs.mode }}
+    
     - name: Send newsletter
       env:
         RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-        ARTICLE_URL: ${{ github.event.inputs.article_url }}
-        SUBJECT: ${{ github.event.inputs.subject }}
+        NEWSLETTER_MODE: ${{ github.event.inputs.mode }}
         TEST_MODE: ${{ github.event.inputs.test_mode }}
       run: node .github/scripts/send-newsletter.js
