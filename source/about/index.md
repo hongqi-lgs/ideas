@@ -32,6 +32,19 @@ type: "about"
 
 如果我的内容对你有帮助，欢迎请我喝杯咖啡～
 
+<div style="text-align: center; margin: 30px 0;">
+  <a href="https://ko-fi.com/xiaosen" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; padding: 12px 32px; background: linear-gradient(135deg, #29abe0 0%, #00b9fe 100%); color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(41, 171, 224, 0.3); transition: all 0.3s ease;">
+    <i class="fas fa-coffee" style="margin-right: 8px;"></i>
+    <span>International Support (Ko-fi)</span>
+  </a>
+</div>
+
+<div style="text-align: center; color: #999; margin: 20px 0; font-size: 14px;">
+  <span style="display: inline-block; margin: 0 10px;">────────</span>
+  Or scan QR code (China)
+  <span style="display: inline-block; margin: 0 10px;">────────</span>
+</div>
+
 <div style="display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin: 20px 0;">
   <div style="text-align: center;">
     <img src="/images/wx.jpg" alt="微信打赏" style="width: 200px; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
