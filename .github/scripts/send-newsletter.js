@@ -64,6 +64,10 @@ function generateEmailHTML(article) {
     <p style="margin-top: 20px;">
       <a href="{{unsubscribe_url}}">取消订阅</a> · <a href="${BLOG_URL}">访问博客</a>
     </p>
+    <div style="background: #f8f9fa; padding: 15px; margin-top: 20px; border-left: 3px solid #667eea; font-size: 12px; color: #666;">
+      ⚠️ 本邮件由系统自动发送，请勿直接回复。<br>
+      ⚠️ This email is sent automatically. Please do not reply directly.
+    </div>
   </div>
 </body>
 </html>
@@ -87,6 +91,10 @@ ${article.excerpt}
 
 取消订阅：{{unsubscribe_url}}
 访问博客：${BLOG_URL}
+
+---
+⚠️ 本邮件由系统自动发送，请勿直接回复。
+⚠️ This email is sent automatically. Please do not reply directly.
   `.trim();
 }
 
@@ -234,6 +242,7 @@ async function main() {
     a { color: #667eea; text-decoration: none; }
     a:hover { text-decoration: underline; }
     .footer { border-top: 1px solid #eee; padding-top: 20px; margin-top: 40px; text-align: center; color: #999; font-size: 14px; }
+    .disclaimer { background: #f8f9fa; padding: 15px; margin-top: 20px; border-left: 3px solid #667eea; font-size: 12px; color: #666; }
   </style>
 </head>
 <body>
@@ -247,17 +256,22 @@ async function main() {
   <div class="footer">
     <p>💬 回复这封邮件与我交流</p>
     <p><a href="{{unsubscribe_url}}">取消订阅</a> · <a href="${BLOG_URL}">访问博客</a></p>
+    <div class="disclaimer">
+      ⚠️ 本邮件由系统自动发送，请勿直接回复。<br>
+      ⚠️ This email is sent automatically. Please do not reply directly.
+    </div>
   </div>
 </body>
 </html>
   `.trim();
   
-  const text = newsletter.content;
+  const text = newsletter.content + '\n\n---\n⚠️ 本邮件由系统自动发送，请勿直接回复。\n⚠️ This email is sent automatically. Please do not reply directly.';
 
   // 发送邮件
   console.log(`\n📤 Sending emails to ${recipients.length} recipients...`);
   let successCount = 0;
   let failCount = 0;
+  const failedRecipients = [];
 
   for (const subscriber of recipients) {
     try {
@@ -269,13 +283,23 @@ async function main() {
       await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (error) {
       console.error(`❌ Failed to send to ${subscriber.email}:`, error.message);
+      failedRecipients.push({ email: subscriber.email, error: error.message });
       failCount++;
+      // 即使失败也继续发送下一个
     }
   }
 
   console.log(`\n✨ Newsletter send complete!`);
   console.log(`   Success: ${successCount}`);
   console.log(`   Failed: ${failCount}`);
+  
+  // 输出失败详情
+  if (failedRecipients.length > 0) {
+    console.log(`\n⚠️  Failed recipients:`);
+    failedRecipients.forEach(({ email, error }) => {
+      console.log(`   - ${email}: ${error}`);
+    });
+  }
 
   // 记录发送（只在非测试模式下记录）
   if (!testMode && successCount > 0) {
