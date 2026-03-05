@@ -79,6 +79,41 @@
       'related_posts': 'Related Posts',
     }
   };
+    'ja': {
+      '首页': 'ホーム',
+      '归档': 'アーカイブ',
+      '标签': 'タグ',
+      '分类': 'カテゴリー',
+      '关于': 'について',
+      '公告': 'お知らせ',
+      '最新文章': '最新記事',
+      '网站信息': 'サイト情報',
+      '文章数目': '記事数',
+      '本站访客数': '訪問者数',
+      '本站总浏览量': 'ページビュー',
+      '最后更新时间': '最終更新',
+      '文章': '記事',
+      '标签_stat': 'タグ',
+      '分类_stat': 'カテゴリー',
+      '签名': '未来は来た、前を見ず、流れに従う。',
+      '公告内容': 'ブログへようこそ！アイデア、技術、生活を記録します。',
+      'copyright_by': 'By 森哥',
+      '发表于': '投稿日',
+      'lang_switch': '🌐 中文',
+      '目录': '目次',
+      '搜索': '検索',
+      'reward_text': '役に立ちましたか？コーヒーをおごってください ☕',
+      'wechat': 'WeChat',
+      'alipay': 'Alipay',
+      'post_author': '著者: ',
+      'post_link': '記事リンク: ',
+      'copyright_notice': '著作権: ',
+      'copyright_content': 'このブログのすべての記事は、特に明記されていない限り、<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a>ライセンスの下で提供されます。出典を明記してください <a href="https://hongqi-lgs.github.io/ideas" target="_blank">森哥 Ideas</a>！',
+      'prev_post': '前の記事',
+      'next_post': '次の記事',
+      'related_posts': '関連記事',
+  },
+  };
 
   // 双向查找表：任意文本 → 翻译 key
   var textToKey = {};
@@ -94,6 +129,7 @@
     if (stored && translations[stored]) return stored;
     var browserLang = (navigator.language || navigator.userLanguage || '').toLowerCase();
     if (browserLang.startsWith('zh')) return 'zh-CN';
+    if (browserLang.startsWith('ja')) return 'ja';
     return 'en';
   }
 
@@ -104,7 +140,7 @@
 
   function toggleLang() {
     var current = getLang();
-    var next = current === 'zh-CN' ? 'en' : 'zh-CN';
+    var next = current === 'zh-CN' ? 'en' : (current === 'en' ? 'ja' : 'zh-CN');
 
     // 文章详情页：跳转到对应语言版本
     if (isPostPage()) {
@@ -147,39 +183,30 @@
   // 获取对应语言版本的文章路径
   function getTranslatedPostPath(targetLang) {
     var path = window.location.pathname;
-    // 去掉末尾斜杠便于处理
     var cleanPath = path.replace(/\/+$/, '');
 
-    // 特殊处理：关于页面
+    // 关于页面
     if (cleanPath.indexOf('/about') !== -1) {
-      if (targetLang === 'en') {
-        // 中文 → 英文
-        if (cleanPath.match(/\/about\/index-en$/)) {
-          return null; // 已经是英文版
-        }
-        return '/about/index-en.html';
+      if (targetLang === 'ja') {
+        return cleanPath.match(/index-ja/) ? null : '/about/index-ja.html';
+      } else if (targetLang === 'en') {
+        return cleanPath.match(/index-en/) ? null : '/about/index-en.html';
       } else {
-        // 英文 → 中文
-        if (cleanPath.match(/\/about\/index-en/)) {
-          return '/about/';
-        }
-        return null; // 已经是中文版
+        return cleanPath.match(/index-(en|ja)/) ? '/about/' : null;
       }
     }
 
-    // 文章页面
-    if (targetLang === 'en') {
-      // 中文 → 英文：加 -en
-      if (cleanPath.match(/-en$/)) {
-        return null; // 已经是英文版
-      }
-      return cleanPath + '-en/';
+    // 文章页面 - 优先日文，回退英文
+    var currentIsJa = cleanPath.match(/-ja$/);
+    var currentIsEn = cleanPath.match(/-en$/);
+    var basePath = cleanPath.replace(/-(en|ja)$/, '');
+
+    if (targetLang === 'ja') {
+      return currentIsJa ? null : basePath + '-ja/';
+    } else if (targetLang === 'en') {
+      return currentIsEn ? null : basePath + '-en/';
     } else {
-      // 英文 → 中文：去掉 -en
-      if (cleanPath.match(/-en$/)) {
-        return cleanPath.replace(/-en$/, '/');
-      }
-      return null; // 已经是中文版
+      return (currentIsJa || currentIsEn) ? basePath + '/' : null;
     }
   }
 
@@ -194,16 +221,16 @@
     var currentTitle = document.title;
     // 处理不同页面类型的 title
     if (currentTitle.includes('归档') || currentTitle.includes('Archives')) {
-      document.title = lang === 'en' ? 'Archives - bob Ideas' : '归档 - 森哥 Ideas';
+      document.title = lang === 'ja' ? 'アーカイブ - 森哥 Ideas' : (lang === 'en' ? 'Archives - bob Ideas' : '归档 - 森哥 Ideas');
     } else if (currentTitle.includes('标签') || currentTitle.includes('Tags')) {
-      document.title = lang === 'en' ? 'Tags - bob Ideas' : '标签 - 森哥 Ideas';
+      document.title = lang === 'ja' ? 'タグ - 森哥 Ideas' : (lang === 'en' ? 'Tags - bob Ideas' : '标签 - 森哥 Ideas');
     } else if (currentTitle.includes('分类') || currentTitle.includes('Categories')) {
-      document.title = lang === 'en' ? 'Categories - bob Ideas' : '分类 - 森哥 Ideas';
+      document.title = lang === 'ja' ? 'カテゴリー - 森哥 Ideas' : (lang === 'en' ? 'Categories - bob Ideas' : '分类 - 森哥 Ideas');
     } else if (currentTitle.includes('关于') || currentTitle.includes('About')) {
-      document.title = lang === 'en' ? 'About - bob Ideas' : '关于 - 森哥 Ideas';
+      document.title = lang === 'ja' ? 'について - 森哥 Ideas' : (lang === 'en' ? 'About - bob Ideas' : '关于 - 森哥 Ideas');
     } else if (currentTitle === '森哥 Ideas' || currentTitle === 'bob Ideas' || currentTitle === '红齐 Ideas' || currentTitle === 'Hongqi Ideas') {
       // 首页
-      document.title = lang === 'en' ? 'bob Ideas' : '森哥 Ideas';
+      document.title = lang === 'ja' ? '森哥 Ideas' : (lang === 'en' ? 'bob Ideas' : '森哥 Ideas');
     }
     // 文章详情页的 title 由 post-map 中的数据替换（如果需要）
 
@@ -398,9 +425,10 @@
         item.style.display = isEnglish ? '' : 'none';
       } else if (lang === 'zh-CN') {
         item.style.display = isEnglish ? 'none' : '';
-      } else {
-        // 非中文非英文，默认显示英文
-        item.style.display = isEnglish ? '' : 'none';
+      } else if (lang === 'ja') {
+        // 日语：优先显示日文，没有则显示英文
+        var isJapanese = catLink && (catLink.getAttribute('href').indexOf('/Japanese') !== -1 || catLink.textContent.trim() === 'Japanese');
+        item.style.display = (isJapanese || isEnglish) ? '' : 'none';
       }
     });
 
