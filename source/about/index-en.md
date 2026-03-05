@@ -6,12 +6,12 @@ lang: en
 ---
 
 <div style="text-align: center; margin-bottom: 24px;">
-  <img src="/images/avatar.jpg" alt="Hongqi" class="avatar-circle" style="border-radius: 50%; width: 120px; height: 120px; object-fit: cover; border: 3px solid #667eea; box-shadow: 0 4px 12px rgba(102,126,234,0.3);" />
+  <img src="/images/avatar.jpg" alt="bob" class="avatar-circle" style="border-radius: 50%; width: 120px; height: 120px; object-fit: cover; border: 3px solid #667eea; box-shadow: 0 4px 12px rgba(102,126,234,0.3);" />
 </div>
 
 ## 👋 Hello
 
-I'm **Hongqi (红齐)**, a curious mind fascinated by technology and product design.
+I'm **bob (森哥)**, a curious mind fascinated by technology and product design.
 
 This blog is my digital garden, where I document:
 

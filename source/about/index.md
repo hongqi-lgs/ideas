@@ -5,12 +5,12 @@ type: "about"
 ---
 
 <div style="text-align: center; margin-bottom: 24px;">
-  <img src="/images/avatar.jpg" alt="红齐" class="avatar-circle" style="border-radius: 50%; width: 120px; height: 120px; object-fit: cover; border: 3px solid #667eea; box-shadow: 0 4px 12px rgba(102,126,234,0.3);" />
+  <img src="/images/avatar.jpg" alt="森哥" class="avatar-circle" style="border-radius: 50%; width: 120px; height: 120px; object-fit: cover; border: 3px solid #667eea; box-shadow: 0 4px 12px rgba(102,126,234,0.3);" />
 </div>
 
 ## 👋 你好
 
-我是**红齐**，一个对技术和产品充满好奇心的人。
+我是**森哥**，一个对技术和产品充满好奇心的人。
 
 这个博客是我的数字花园，用来记录：
 
