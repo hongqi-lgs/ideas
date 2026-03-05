@@ -63,7 +63,7 @@ ${article.excerpt_en || article.excerpt_zh}
 📧 转发给朋友订阅：${BLOG_URL}
 
 ---
-红齐 Ideas · 技术·产品·思考
+森哥 Ideas · 技术·产品·思考
   `.trim();
   
   return {
@@ -139,7 +139,7 @@ ${article.excerpt_en || article.excerpt_zh}
 📧 转发给朋友订阅：${BLOG_URL}
 
 ---
-红齐 Ideas · 技术·产品·思考
+森哥 Ideas · 技术·产品·思考
   `.trim();
   
   return {
@@ -191,7 +191,7 @@ ${article.excerpt_en || article.excerpt_zh}
 📧 转发给朋友订阅：${BLOG_URL}
 
 ---
-红齐 Ideas · 技术·产品·思考
+森哥 Ideas · 技术·产品·思考
   `.trim();
   
   return {
