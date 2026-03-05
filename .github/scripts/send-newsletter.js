@@ -40,7 +40,7 @@ function generateEmailHTML(article) {
 </head>
 <body>
   <div class="header">
-    <h1>红齐 Ideas</h1>
+    <h1>森哥 Ideas</h1>
     <p style="color: #666; margin: 10px 0 0 0;">技术·产品·思考</p>
   </div>
   
@@ -107,7 +107,7 @@ async function sendEmail(to, subject, html, text) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      from: `红齐 Ideas <${FROM_EMAIL}>`,
+      from: `森哥 Ideas <${FROM_EMAIL}>`,
       to: [to],
       subject: subject,
       html: html,
@@ -308,7 +308,7 @@ async function main() {
 </head>
 <body>
   <div class="header">
-    <h1>红齐 Ideas</h1>
+    <h1>森哥 Ideas</h1>
     <p style="color: #666; margin: 10px 0 0 0;">技术·产品·思考</p>
   </div>
   <div class="content">
