@@ -1,20 +1,21 @@
-// 语言切换器 - 强制菜单翻译版
+// 语言切换器 - 事件驱动版
 (function() {
   var STORAGE_KEY = 'ideas-lang';
-  var currentLang = null;
 
   function getLang() {
-    if (currentLang) return currentLang;
     var lang = localStorage.getItem(STORAGE_KEY);
-    if (lang && ['zh-CN', 'en', 'ja'].includes(lang)) {
-      currentLang = lang;
-      return lang;
-    }
+    if (lang && ['zh-CN', 'en', 'ja'].includes(lang)) return lang;
     var browserLang = (navigator.language || '').toLowerCase();
-    if (browserLang.startsWith('zh')) currentLang = 'zh-CN';
-    else if (browserLang.startsWith('ja')) currentLang = 'ja';
-    else currentLang = 'en';
-    return currentLang;
+    if (browserLang.startsWith('zh')) return 'zh-CN';
+    if (browserLang.startsWith('ja')) return 'ja';
+    return 'en';
+  }
+
+  function setLang(lang) {
+    localStorage.setItem(STORAGE_KEY, lang);
+    // 触发自定义事件通知 i18n.js
+    var event = new CustomEvent('langchange', { detail: { lang: lang } });
+    window.dispatchEvent(event);
   }
 
   function isPostPage() {
@@ -26,43 +27,36 @@
   }
 
   function getTranslatedPath(targetLang) {
-    var path = window.location.pathname;
-    var cleanPath = path.replace(/\/+$/, '').replace(/\.html$/, '');
+    var path = window.location.pathname.replace(/\/+$/, '').replace(/\.html$/, '');
     
-    if (cleanPath.indexOf('/about') !== -1) {
+    if (path.indexOf('/about') !== -1) {
       if (targetLang === 'ja') return {primary: '/about/index-ja.html', fallback: '/about/index-en.html'};
       if (targetLang === 'en') return {primary: '/about/index-en.html', fallback: null};
       return {primary: '/about/', fallback: null};
     }
 
-    var currentIsJa = cleanPath.match(/-ja$/);
-    var currentIsEn = cleanPath.match(/-en$/);
-    var basePath = cleanPath.replace(/-(en|ja)$/, '');
+    var isJa = path.match(/-ja$/);
+    var isEn = path.match(/-en$/);
+    var base = path.replace(/-(en|ja)$/, '');
 
     if (targetLang === 'ja') {
-      if (currentIsJa) return null;
-      return {primary: basePath + '-ja/', fallback: basePath + '-en/'};
+      return isJa ? null : {primary: base + '-ja/', fallback: base + '-en/'};
     } else if (targetLang === 'en') {
-      if (currentIsEn) return null;
-      return {primary: basePath + '-en/', fallback: null};
+      return isEn ? null : {primary: base + '-en/', fallback: null};
     } else {
-      return (currentIsJa || currentIsEn) ? {primary: basePath + '/', fallback: null} : null;
+      return (isJa || isEn) ? {primary: base + '/', fallback: null} : null;
     }
   }
 
-  function tryJump(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('HEAD', url, true);
-    xhr.timeout = 1500;
-    xhr.onload = function() { callback(xhr.status === 200); };
-    xhr.onerror = xhr.ontimeout = function() { callback(false); };
-    xhr.send();
+  function checkUrl(url, callback) {
+    fetch(url, {method: 'HEAD'})
+      .then(function(res) { callback(res.ok); })
+      .catch(function() { callback(false); });
   }
 
   function switchLang(lang) {
-    console.log('[Lang] Switch to:', lang);
+    console.log('[Lang] Switching to:', lang);
     localStorage.setItem(STORAGE_KEY, lang);
-    currentLang = lang;
     
     if (isPostPage()) {
       var paths = getTranslatedPath(lang);
@@ -74,12 +68,12 @@
       var target = paths.primary || paths;
       var fallback = paths.fallback;
       
-      tryJump(target, function(ok) {
+      checkUrl(target, function(ok) {
         if (ok) {
           window.location.href = target;
         } else if (fallback) {
-          console.log('[Lang] 404, fallback to:', fallback);
-          tryJump(fallback, function(ok2) {
+          console.log('[Lang] Fallback to:', fallback);
+          checkUrl(fallback, function(ok2) {
             window.location.href = ok2 ? fallback : target;
           });
         } else {
@@ -104,55 +98,26 @@
       var isEn = href.indexOf('/English') > -1;
       var isJa = href.indexOf('/Japanese') > -1;
       
-      var show = false;
-      if (lang === 'zh-CN') show = !isEn && !isJa;
-      else if (lang === 'en') show = isEn;
-      else if (lang === 'ja') show = isJa || isEn;
+      var show = (lang === 'zh-CN' && !isEn && !isJa) ||
+                 (lang === 'en' && isEn) ||
+                 (lang === 'ja' && (isJa || isEn));
       
       post.style.display = show ? '' : 'none';
       if (show) visible++;
     });
     
-    console.log('[Lang] Posts visible:', visible, '/ language:', lang);
-  }
-
-  // 手动翻译菜单（备用方案）
-  function translateMenu() {
-    var lang = getLang();
-    var menuMap = {
-      'zh-CN': {首页:'首页',归档:'归档',标签:'标签',分类:'分类',关于:'关于'},
-      'en': {首页:'Home',归档:'Archives',标签:'Tags',分类:'Categories',关于:'About'},
-      'ja': {首页:'ホーム',归档:'アーカイブ',标签:'タグ',分类:'カテゴリー',关于:'について'}
-    };
-    
-    var trans = menuMap[lang];
-    if (!trans) return;
-    
-    document.querySelectorAll('.menus_item a span').forEach(function(span) {
-      var text = span.textContent.trim();
-      // 反向查找key
-      Object.keys(menuMap).forEach(function(l) {
-        Object.keys(menuMap[l]).forEach(function(key) {
-          if (menuMap[l][key] === text && trans[key]) {
-            span.textContent = ' ' + trans[key];
-          }
-        });
-      });
-    });
-    
-    console.log('[Lang] Menu translated to:', lang);
+    console.log('[Lang] Visible posts:', visible);
   }
 
   function createSelector() {
-    var links = document.querySelectorAll('a[href*="javascript:void"], a .fa-language');
-    var processed = false;
+    var links = document.querySelectorAll('a');
     
-    links.forEach(function(elem) {
-      var link = elem.tagName === 'A' ? elem : elem.closest('a');
-      if (!link || link.getAttribute('data-lang-sel')) return;
+    for (var i = 0; i < links.length; i++) {
+      var link = links[i];
+      if (link.getAttribute('data-lang-sel')) continue;
       
       var text = link.textContent.trim();
-      if (!text.includes('语言') && !text.includes('Language')) return;
+      if (!text.includes('语言') && !link.href.includes('javascript:void')) continue;
       
       link.setAttribute('data-lang-sel', '1');
       
@@ -160,61 +125,43 @@
       sel.style.cssText = 'padding:6px 12px;border:1px solid rgba(255,255,255,0.3);border-radius:4px;background:rgba(255,255,255,0.15);color:#fff;cursor:pointer;font-size:14px';
       
       var lang = getLang();
-      [{v:'zh-CN',l:'🇨🇳 中文'},{v:'en',l:'🇺🇸 EN'},{v:'ja',l:'🇯🇵 日本語'}].forEach(function(o) {
+      var opts = [
+        {v:'zh-CN',l:'🇨🇳 中文'},
+        {v:'en',l:'🇺🇸 EN'},
+        {v:'ja',l:'🇯🇵 日本語'}
+      ];
+      
+      for (var j = 0; j < opts.length; j++) {
         var opt = document.createElement('option');
-        opt.value = o.v;
-        opt.textContent = o.l;
+        opt.value = opts[j].v;
+        opt.textContent = opts[j].l;
         opt.style.cssText = 'background:#fff;color:#333';
-        if (o.v === lang) opt.selected = true;
+        if (opts[j].v === lang) opt.selected = true;
         sel.appendChild(opt);
-      });
+      }
       
       sel.onchange = function() { switchLang(this.value); };
       link.parentNode.replaceChild(sel, link);
-      processed = true;
-    });
-    
-    if (processed) console.log('[Lang] Selector created');
-  }
-
-  function applyI18n() {
-    if (window.i18n && typeof window.i18n.setLang === 'function') {
-      console.log('[Lang] Calling i18n.setLang()');
-      window.i18n.setLang(getLang());
-    } else if (window.i18n && typeof window.i18n.apply === 'function') {
-      console.log('[Lang] Calling i18n.apply()');
-      window.i18n.apply();
+      console.log('[Lang] Selector created');
+      break;
     }
   }
 
   function init() {
-    var lang = getLang();
-    console.log('[Lang] Init, current:', lang);
-    
+    console.log('[Lang] Current:', getLang());
     createSelector();
     
-    var isHome = window.location.pathname === '/' || window.location.pathname.match(/^\/page\/\d+\//);
-    if (isHome) {
-      setTimeout(filterPosts, 100);
-      setTimeout(filterPosts, 500);
-    }
+    var isHome = window.location.pathname === '/' || 
+                 window.location.pathname.match(/^\/page\/\d+\//);
+    if (isHome) filterPosts();
     
-    // 翻译菜单 - 多次尝试
-    setTimeout(translateMenu, 50);
-    setTimeout(translateMenu, 200);
-    setTimeout(translateMenu, 500);
-    
-    // 触发 i18n.js
-    setTimeout(applyI18n, 100);
-    setTimeout(applyI18n, 300);
+    // 通知 i18n.js 当前语言
+    setLang(getLang());
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
-    setTimeout(init, 10);
+    init();
   }
-  setTimeout(init, 300);
-  setTimeout(init, 800);
-  setTimeout(init, 1500);
 })();

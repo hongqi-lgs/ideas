@@ -811,3 +811,22 @@
 
 
 
+
+// 监听语言切换事件
+window.addEventListener('langchange', function(e) {
+  console.log('[i18n] Received langchange event:', e.detail.lang);
+  applyLang(e.detail.lang);
+});
+
+// 页面加载完成后立即应用当前语言
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() {
+    var currentLang = getLang();
+    console.log('[i18n] DOMContentLoaded, applying:', currentLang);
+    applyLang(currentLang);
+  });
+} else {
+  var currentLang = getLang();
+  console.log('[i18n] Already loaded, applying:', currentLang);
+  applyLang(currentLang);
+}
