@@ -1,4 +1,4 @@
-// 语言切换器 - 事件驱动版
+// 语言切换器
 (function() {
   var STORAGE_KEY = 'ideas-lang';
 
@@ -13,7 +13,6 @@
 
   function setLang(lang) {
     localStorage.setItem(STORAGE_KEY, lang);
-    // 触发自定义事件通知 i18n.js
     var event = new CustomEvent('langchange', { detail: { lang: lang } });
     window.dispatchEvent(event);
   }
@@ -55,7 +54,7 @@
   }
 
   function switchLang(lang) {
-    console.log('[Lang] Switching to:', lang);
+    console.log('[Lang] Switch to:', lang);
     localStorage.setItem(STORAGE_KEY, lang);
     
     if (isPostPage()) {
@@ -72,7 +71,7 @@
         if (ok) {
           window.location.href = target;
         } else if (fallback) {
-          console.log('[Lang] Fallback to:', fallback);
+          console.log('[Lang] Fallback:', fallback);
           checkUrl(fallback, function(ok2) {
             window.location.href = ok2 ? fallback : target;
           });
@@ -106,62 +105,71 @@
       if (show) visible++;
     });
     
-    console.log('[Lang] Visible posts:', visible);
+    console.log('[Lang] Posts:', visible);
   }
 
   function createSelector() {
+    console.log('[Lang] Creating selector...');
     var links = document.querySelectorAll('a');
+    var found = 0;
     
     for (var i = 0; i < links.length; i++) {
       var link = links[i];
       if (link.getAttribute('data-lang-sel')) continue;
       
       var text = link.textContent.trim();
-      if (!text.includes('语言') && !link.href.includes('javascript:void')) continue;
+      var href = link.href || '';
       
-      link.setAttribute('data-lang-sel', '1');
-      
-      var sel = document.createElement('select');
-      sel.style.cssText = 'padding:6px 12px;border:1px solid rgba(255,255,255,0.3);border-radius:4px;background:rgba(255,255,255,0.15);color:#fff;cursor:pointer;font-size:14px';
-      
-      var lang = getLang();
-      var opts = [
-        {v:'zh-CN',l:'🇨🇳 中文'},
-        {v:'en',l:'🇺🇸 EN'},
-        {v:'ja',l:'🇯🇵 日本語'}
-      ];
-      
-      for (var j = 0; j < opts.length; j++) {
-        var opt = document.createElement('option');
-        opt.value = opts[j].v;
-        opt.textContent = opts[j].l;
-        opt.style.cssText = 'background:#fff;color:#333';
-        if (opts[j].v === lang) opt.selected = true;
-        sel.appendChild(opt);
+      if (text.includes('语言') || href.includes('javascript:void')) {
+        found++;
+        link.setAttribute('data-lang-sel', '1');
+        
+        var sel = document.createElement('select');
+        sel.style.cssText = 'padding:6px 12px;border:1px solid rgba(255,255,255,0.3);border-radius:4px;background:rgba(255,255,255,0.15);color:#fff;cursor:pointer;font-size:14px';
+        
+        var lang = getLang();
+        [{v:'zh-CN',l:'🇨🇳 中文'},{v:'en',l:'🇺🇸 EN'},{v:'ja',l:'🇯🇵 日本語'}].forEach(function(o) {
+          var opt = document.createElement('option');
+          opt.value = o.v;
+          opt.textContent = o.l;
+          opt.style.cssText = 'background:#fff;color:#333';
+          if (o.v === lang) opt.selected = true;
+          sel.appendChild(opt);
+        });
+        
+        sel.onchange = function() { switchLang(this.value); };
+        link.parentNode.replaceChild(sel, link);
+        console.log('[Lang] Selector created #' + found);
       }
-      
-      sel.onchange = function() { switchLang(this.value); };
-      link.parentNode.replaceChild(sel, link);
-      console.log('[Lang] Selector created');
-      break;
+    }
+    
+    if (found === 0) {
+      console.warn('[Lang] No language link found');
     }
   }
 
   function init() {
-    console.log('[Lang] Current:', getLang());
+    console.log('[Lang] Init, lang:', getLang());
+    
     createSelector();
     
     var isHome = window.location.pathname === '/' || 
                  window.location.pathname.match(/^\/page\/\d+\//);
     if (isHome) filterPosts();
     
-    // 通知 i18n.js 当前语言
     setLang(getLang());
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
+  // 多次尝试
+  function tryInit() {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   }
+  
+  tryInit();
+  setTimeout(tryInit, 500);
+  setTimeout(tryInit, 1500);
 })();
