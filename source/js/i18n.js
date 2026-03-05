@@ -455,46 +455,66 @@
 
   // 绑定语言切换下拉框
   function bindLangSwitch() {
-    document.querySelectorAll('.menus_item a, #sidebar-menus .menus_item a').forEach(function (a) {
-      if (a.getAttribute('data-i18n-bound')) return;
-
-      var text = a.textContent.trim();
-      if (text.includes('English') || text.includes('中文') || text.includes('日本語') || a.querySelector('.fa-language')) {
-        a.setAttribute('data-i18n-role', 'lang-switch');
-        a.setAttribute('data-i18n-bound', '1');
-        
-        // 替换为下拉选择框
-        var select = document.createElement('select');
-        select.className = 'lang-selector';
-        select.style.cssText = 'padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; background: #fff; cursor: pointer; font-size: 14px;';
-        
-        var currentLang = getLang();
-        var options = [
-          {value: 'zh-CN', label: '🇨🇳 中文', icon: '🇨🇳'},
-          {value: 'en', label: '🇺🇸 English', icon: '🇺🇸'},
-          {value: 'ja', label: '🇯🇵 日本語', icon: '🇯🇵'}
-        ];
-        
-        options.forEach(function(opt) {
-          var option = document.createElement('option');
-          option.value = opt.value;
-          option.textContent = opt.label;
-          if (opt.value === currentLang) option.selected = true;
-          select.appendChild(option);
-        });
-        
-        select.addEventListener('change', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          switchLang(this.value);
-          var mask = document.getElementById('menu-mask');
-          if (mask) mask.click();
-        });
-        
-        // 替换原链接
-        var parent = a.parentNode;
-        parent.insertBefore(select, a);
-        a.style.display = 'none';
+    // 查找所有包含 fa-language 图标的菜单项
+    var langLinks = document.querySelectorAll('a[href*="javascript:void"], .menus_item a .fa-language');
+    
+    if (langLinks.length === 0) {
+      // 如果没找到，尝试查找包含"语言"或"Language"文字的链接
+      document.querySelectorAll('.menus_item a, #sidebar-menus .menus_item a').forEach(function(a) {
+        var text = a.textContent.trim();
+        if (text.includes('语言') || text.includes('Language') || text.includes('言語')) {
+          langLinks = [a];
+        }
+      });
+    }
+    
+    langLinks.forEach(function(linkOrIcon) {
+      var link = linkOrIcon.tagName === 'A' ? linkOrIcon : linkOrIcon.closest('a');
+      if (!link || link.getAttribute('data-i18n-bound')) return;
+      
+      link.setAttribute('data-i18n-bound', '1');
+      
+      // 创建下拉选择框容器
+      var wrapper = document.createElement('span');
+      wrapper.style.cssText = 'display: inline-block; vertical-align: middle;';
+      
+      var select = document.createElement('select');
+      select.className = 'lang-selector';
+      select.style.cssText = 'padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; font-size: 13px; margin-left: 4px;';
+      
+      var currentLang = getLang();
+      var options = [
+        {value: 'zh-CN', label: '中文'},
+        {value: 'en', label: 'English'},
+        {value: 'ja', label: '日本語'}
+      ];
+      
+      options.forEach(function(opt) {
+        var option = document.createElement('option');
+        option.value = opt.value;
+        option.textContent = opt.label;
+        if (opt.value === currentLang) option.selected = true;
+        select.appendChild(option);
+      });
+      
+      select.addEventListener('change', function(e) {
+        switchLang(this.value);
+        var mask = document.getElementById('menu-mask');
+        if (mask) mask.click();
+      });
+      
+      wrapper.appendChild(select);
+      
+      // 替换链接内容为图标+下拉框
+      var icon = link.querySelector('i');
+      if (icon) {
+        link.innerHTML = '';
+        link.appendChild(icon.cloneNode(true));
+        link.appendChild(wrapper);
+        link.style.pointerEvents = 'none'; // 禁用链接点击
+      } else {
+        link.parentNode.insertBefore(wrapper, link);
+        link.style.display = 'none';
       }
     });
   }
