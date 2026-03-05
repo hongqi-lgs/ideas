@@ -1,7 +1,9 @@
-// 语言切换器 - 带404 fallback
+// 语言切换器 - 完整版（切换+过滤+UI翻译）
 (function() {
+  var STORAGE_KEY = 'ideas-lang';
+
   function getLang() {
-    var lang = localStorage.getItem('ideas-lang');
+    var lang = localStorage.getItem(STORAGE_KEY);
     if (lang && ['zh-CN', 'en', 'ja'].includes(lang)) return lang;
     var browserLang = (navigator.language || '').toLowerCase();
     if (browserLang.startsWith('zh')) return 'zh-CN';
@@ -23,13 +25,9 @@
     var cleanPath = path.replace(/\/+$/, '').replace(/\.html$/, '');
     
     if (cleanPath.indexOf('/about') !== -1) {
-      if (targetLang === 'ja') {
-        return cleanPath.match(/index-ja/) ? null : '/about/index-ja.html';
-      } else if (targetLang === 'en') {
-        return cleanPath.match(/index-en/) ? null : '/about/index-en.html';
-      } else {
-        return cleanPath.match(/index-(en|ja)/) ? '/about/' : null;
-      }
+      if (targetLang === 'ja') return cleanPath.match(/index-ja/) ? null : '/about/index-ja.html';
+      if (targetLang === 'en') return cleanPath.match(/index-en/) ? null : '/about/index-en.html';
+      return cleanPath.match(/index-(en|ja)/) ? '/about/' : null;
     }
 
     var currentIsJa = cleanPath.match(/-ja$/);
@@ -50,18 +48,18 @@
   function checkUrlExists(url, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open('HEAD', url, true);
+    xhr.timeout = 2000;
     xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-        callback(xhr.status === 200);
-      }
+      if (xhr.readyState === 4) callback(xhr.status === 200);
     };
     xhr.onerror = function() { callback(false); };
+    xhr.ontimeout = function() { callback(false); };
     xhr.send();
   }
 
   function switchLang(lang) {
-    console.log('[Lang Switcher] Switching to:', lang);
-    localStorage.setItem('ideas-lang', lang);
+    console.log('[Lang] Switching to:', lang);
+    localStorage.setItem(STORAGE_KEY, lang);
     
     if (isPostPage()) {
       var pathResult = getTranslatedPath(lang);
@@ -69,26 +67,20 @@
         var targetPath = pathResult.primary || pathResult;
         var fallbackPath = pathResult.fallback;
         
-        console.log('[Lang Switcher] Trying:', targetPath);
-        
-        // 检查目标路径是否存在
         checkUrlExists(targetPath, function(exists) {
           if (exists) {
-            console.log('[Lang Switcher] Found! Jumping to:', targetPath);
+            console.log('[Lang] Jumping to:', targetPath);
             window.location.href = targetPath;
           } else if (fallbackPath) {
-            console.log('[Lang Switcher] Not found. Trying fallback:', fallbackPath);
             checkUrlExists(fallbackPath, function(fallbackExists) {
               if (fallbackExists) {
-                console.log('[Lang Switcher] Fallback found! Jumping to:', fallbackPath);
+                console.log('[Lang] Fallback to:', fallbackPath);
                 window.location.href = fallbackPath;
               } else {
-                console.log('[Lang Switcher] No version available. Reloading.');
                 window.location.reload();
               }
             });
           } else {
-            console.log('[Lang Switcher] No translation available. Reloading.');
             window.location.reload();
           }
         });
@@ -96,64 +88,12 @@
       }
     }
     
-    console.log('[Lang Switcher] Reloading page');
     window.location.reload();
   }
-
-  function init() {
-    console.log('[Lang Switcher] Initializing...');
-    
-    var links = document.querySelectorAll('a');
-    var replaced = false;
-    
-    links.forEach(function(link) {
-      if (link.getAttribute('data-lang-bound')) return;
-      
-      if (link.textContent.includes('语言') || link.href.includes('javascript:void')) {
-        console.log('[Lang Switcher] Found link:', link.textContent);
-        link.setAttribute('data-lang-bound', '1');
-        
-        var select = document.createElement('select');
-        select.style.cssText = 'padding: 6px 12px; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; background: rgba(255,255,255,0.15); color: #fff; cursor: pointer; font-size: 14px;';
-        
-        var currentLang = getLang();
-        var options = [
-          {value: 'zh-CN', label: '🇨🇳 中文'},
-          {value: 'en', label: '🇺🇸 EN'},
-          {value: 'ja', label: '🇯🇵 日本語'}
-        ];
-        
-        options.forEach(function(opt) {
-          var option = document.createElement('option');
-          option.value = opt.value;
-          option.textContent = opt.label;
-          option.style.cssText = 'background: #fff; color: #333;';
-          if (opt.value === currentLang) option.selected = true;
-          select.appendChild(option);
-        });
-        
-        select.addEventListener('change', function() {
-          switchLang(this.value);
-        });
-        
-        link.parentNode.replaceChild(select, link);
-        replaced = true;
-        console.log('[Lang Switcher] Link replaced successfully');
-      }
-    });
-    
-    if (!replaced) {
-      console.warn('[Lang Switcher] No language link found');
-    }
-  }
-
-})();
 
   // 首页文章过滤
   function filterHomePosts() {
     var currentLang = getLang();
-    console.log('[Lang Switcher] Filtering posts for:', currentLang);
-    
     var posts = document.querySelectorAll('.recent-post-item');
     var count = 0;
     
@@ -171,20 +111,75 @@
       } else if (currentLang === 'en') {
         shouldShow = isEnglish;
       } else if (currentLang === 'ja') {
-        shouldShow = isJapanese || isEnglish; // 日语：显示日文+英文
+        shouldShow = isJapanese || isEnglish;
       }
       
       post.style.display = shouldShow ? '' : 'none';
       if (shouldShow) count++;
     });
     
-    console.log('[Lang Switcher] Showing', count, 'posts');
+    console.log('[Lang] Filtered posts:', count);
   }
 
-  // 页面加载完成后过滤
-  function initFilter() {
+  // 创建选择器
+  function createSelector() {
+    var links = document.querySelectorAll('a');
+    
+    links.forEach(function(link) {
+      if (link.getAttribute('data-lang-bound')) return;
+      
+      if (link.textContent.includes('语言') || link.href.includes('javascript:void')) {
+        link.setAttribute('data-lang-bound', '1');
+        
+        var select = document.createElement('select');
+        select.style.cssText = 'padding: 6px 12px; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; background: rgba(255,255,255,0.15); color: #fff; cursor: pointer; font-size: 14px;';
+        
+        var currentLang = getLang();
+        [
+          {value: 'zh-CN', label: '🇨🇳 中文'},
+          {value: 'en', label: '🇺🇸 EN'},
+          {value: 'ja', label: '🇯🇵 日本語'}
+        ].forEach(function(opt) {
+          var option = document.createElement('option');
+          option.value = opt.value;
+          option.textContent = opt.label;
+          option.style.cssText = 'background: #fff; color: #333;';
+          if (opt.value === currentLang) option.selected = true;
+          select.appendChild(option);
+        });
+        
+        select.addEventListener('change', function() {
+          switchLang(this.value);
+        });
+        
+        link.parentNode.replaceChild(select, link);
+        console.log('[Lang] Selector created');
+      }
+    });
+  }
+
+  // 主初始化
+  function init() {
+    createSelector();
+    
+    // 如果是首页，执行过滤
     if (window.location.pathname === '/' || window.location.pathname.match(/^\/page\/\d+\//)) {
       filterHomePosts();
     }
+    
+    // 触发 i18n.js 的翻译（如果存在）
+    if (window.i18n && window.i18n.apply) {
+      console.log('[Lang] Triggering i18n translation');
+      window.i18n.apply();
+    }
   }
 
+  // 多次尝试初始化
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  setTimeout(init, 500);
+  setTimeout(init, 1500);
+})();
