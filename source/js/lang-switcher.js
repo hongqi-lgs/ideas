@@ -148,10 +148,38 @@
     }
   }
 
+  // 拦截菜单链接，根据语言调整URL
+  function interceptMenuLinks() {
+    var lang = getLang();
+    console.log('[Lang] Intercepting menu links, current lang:', lang);
+    
+    document.querySelectorAll('.menus_item a.site-page').forEach(function(link) {
+      if (link.getAttribute('data-lang-intercept')) return;
+      link.setAttribute('data-lang-intercept', '1');
+      
+      link.addEventListener('click', function(e) {
+        var href = this.getAttribute('href');
+        
+        // 关于页面：根据语言跳转到对应版本
+        if (href && href.includes('/about')) {
+          e.preventDefault();
+          var targetUrl = '/about/';
+          if (lang === 'en') targetUrl = '/about/index-en.html';
+          else if (lang === 'ja') targetUrl = '/about/index-ja.html';
+          
+          console.log('[Lang] Redirecting to:', targetUrl);
+          window.location.href = targetUrl;
+        }
+        // 其他页面（归档/标签/分类）：主题会自动根据语言显示
+      });
+    });
+  }
+
   function init() {
     console.log('[Lang] Init, lang:', getLang());
     
     createSelector();
+    interceptMenuLinks();  // 拦截菜单链接
     
     var isHome = window.location.pathname === '/' || 
                  window.location.pathname.match(/^\/page\/\d+\//);
