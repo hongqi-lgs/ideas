@@ -77,8 +77,7 @@
       'prev_post': 'Previous',
       'next_post': 'Next',
       'related_posts': 'Related Posts',
-    }
-  };
+    },
     'ja': {
       '首页': 'ホーム',
       '归档': 'アーカイブ',
