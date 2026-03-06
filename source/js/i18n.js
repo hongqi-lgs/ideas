@@ -541,7 +541,7 @@
       } else if (lang === 'zh-CN') {
         show = !isEnglish && !isJapanese;
       } else if (lang === 'ja') {
-        show = isJapanese || isEnglish;  // 日语：优先日文，回退英文
+        show = isJapanese;  // 日语：只显示日文文章
       }
       
       item.style.display = show ? '' : 'none';
@@ -571,7 +571,7 @@
       } else if (lang === 'zh-CN') {
         show = (postLang === 'zh-CN');
       } else if (lang === 'ja') {
-        show = (postLang === 'ja' || postLang === 'en');  // 日语：优先日文，回退英文
+        show = (postLang === 'ja');  // 日语：只显示日文文章
       }
       
       item.style.display = show ? '' : 'none';

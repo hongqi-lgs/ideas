@@ -6,7 +6,12 @@
 // 给每篇文章注入 data-post-lang 属性，方便前端识别
 hexo.extend.filter.register('after_post_render', function (data) {
   const categories = data.categories ? data.categories.map(cat => cat.name) : [];
-  const lang = categories.includes('English') ? 'en' : 'zh-CN';
+  let lang = 'zh-CN';
+  if (categories.includes('English')) {
+    lang = 'en';
+  } else if (categories.includes('Japanese')) {
+    lang = 'ja';
+  }
   // 在文章摘要和内容中注入标记（用于首页卡片识别）
   data.lang_mark = lang;
   return data;
