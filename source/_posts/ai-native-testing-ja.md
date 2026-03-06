@@ -6,8 +6,7 @@ tags:
   - ソフトウェアテスト
   - プロンプトエンジニアリング
   - Japanese
-categories:
-  - Japanese
+categories: [Japanese]
 cover: https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1200&q=80
 description: 90日間の実験を通じて、AI Agentとプロンプトエンジニアリングでテストプロセス全体を再構築し、テストカバレッジを62%から94%に向上させ、テスト作成時間を80%短縮した記録。
 lang: ja

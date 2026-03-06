@@ -7,8 +7,7 @@ tags:
   - ビジネスモデル
   - 未来トレンド
   - Japanese
-categories:
-  - Japanese
+categories: [Japanese]
 description: スマート注文からロボットシェフまで、AIは飲食業のあらゆる側面を再構築している。これは単なる効率向上ではなく、業界全体のパラダイムシフトだ。
 lang: ja
 ---

@@ -6,8 +6,7 @@ tags:
   - 技術思考
   - 社会
   - Japanese
-categories:
-  - Japanese
+categories: [Japanese]
 cover:
 description: AI革命の分岐点に立って、楽観主義者は天国を見て、悲観主義者は深淵を見る。真実はおそらくその中間にあるが、決して平凡ではない。
 lang: ja

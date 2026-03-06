@@ -6,8 +6,7 @@ tags:
   - プログラミング
   - 技術
   - Japanese
-categories:
-  - Japanese
+categories: [Japanese]
 lang: ja
 description: AIでコードを生成しても、プロジェクト構造、依存関係管理、テスト方法は百年前のまま。これは革命ではなく、蒸気機関が馬車を引いているようなものだ。
 ---

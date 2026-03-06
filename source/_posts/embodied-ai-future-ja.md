@@ -7,8 +7,7 @@ tags:
   - ロボット
   - 未来予測
   - Japanese
-categories:
-  - Japanese
+categories: [Japanese]
 description: AIが画面から出て機械の身体を持った時、人類の未来はどうなるのか？本文は楽観的視点と悲観的視点の両極端から、具身知能がもたらす可能性のある二つの全く異なる未来を探る。
 lang: ja
 ---

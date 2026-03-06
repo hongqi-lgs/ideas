@@ -5,8 +5,7 @@ tags:
   - 随想
   - 執筆
   - Japanese
-categories:
-  - Japanese
+categories: [Japanese]
 cover:
 description: 情報過多の時代に、なぜまだブログを書くのか？私の三つの理由。
 lang: ja

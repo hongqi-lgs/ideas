@@ -6,8 +6,7 @@ tags:
   - 心理学
   - 思考
   - Japanese
-categories:
-  - Japanese
+categories: [Japanese]
 description: "人々はAIは心理カウンセラーを代替できないと言う。しかし幼い頃から自信のない子供が画面に向かって泣き出した時、私はこの問題を再考し始めた。"
 lang: ja
 ---

@@ -7,8 +7,7 @@ tags:
   - プログラミング言語
   - 技術展望
   - Japanese
-categories:
-  - Japanese
+categories: [Japanese]
 cover:
 description: AI の波が世界を席巻する今日、Rust はその独特な安全性とパフォーマンスの優位性により、AI 開発の第一選択言語になれるのか？本文は複数の角度から Rust が AI 時代に直面する機会と挑戦を探ります。
 lang: ja

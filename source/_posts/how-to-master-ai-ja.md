@@ -6,8 +6,7 @@ tags:
   - 学習方法
   - 実用チュートリアル
   - Japanese
-categories:
-  - Japanese
+categories: [Japanese]
 cover: https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80
 description: 技術的背景不要、プログラミング基礎不要。1ヶ月でAIをあなたのスーパーアシスタントに。これは私が使った最も効果的な学習ルート。
 lang: ja
