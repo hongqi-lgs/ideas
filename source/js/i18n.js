@@ -283,6 +283,20 @@
       '邮件订阅': { 'zh-CN': '邮件订阅', 'en': 'Email Subscribe', 'ja': 'メール購読' },
       'Email Subscribe': { 'zh-CN': '邮件订阅', 'en': 'Email Subscribe', 'ja': 'メール購読' },
       'メール購読': { 'zh-CN': '邮件订阅', 'en': 'Email Subscribe', 'ja': 'メール購読' },
+      
+      // 分类/标签/归档（可能出现在侧边栏）
+      '分类': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
+      'Categories': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
+      'カテゴリー': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
+      'カテゴリ': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
+      
+      '标签': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
+      'Tags': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
+      'タグ': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
+      
+      '归档': { 'zh-CN': '归档', 'en': 'Archives', 'ja': 'アーカイブ' },
+      'Archives': { 'zh-CN': '归档', 'en': 'Archives', 'ja': 'アーカイブ' },
+      'アーカイブ': { 'zh-CN': '归档', 'en': 'Archives', 'ja': 'アーカイブ' },
     };
     
     var headlineSpans = document.querySelectorAll('.item-headline span');
@@ -315,10 +329,17 @@
       'アーカイブ': { 'zh-CN': '归档', 'en': 'Archives', 'ja': 'アーカイブ' },
     };
     
-    document.querySelectorAll('.card-categories .item-headline span, .card-tag-cloud .item-headline span, .card-archives .item-headline span').forEach(function (span) {
+    var cardSpans = document.querySelectorAll('.card-categories .item-headline span, .card-tag-cloud .item-headline span, .card-archives .item-headline span');
+    console.log('[i18n] 卡片标题 - 找到', cardSpans.length, '个');
+    
+    cardSpans.forEach(function (span) {
       var text = span.textContent.trim();
+      console.log('[i18n] 卡片标题文本:', JSON.stringify(text), '字符码:', Array.from(text).map(c => c.charCodeAt(0)));
       if (cardTranslations[text]) {
+        console.log('[i18n] 翻译卡片:', text, '->', cardTranslations[text][lang]);
         span.textContent = cardTranslations[text][lang];
+      } else {
+        console.log('[i18n] 卡片未找到翻译:', text);
       }
     });
 
