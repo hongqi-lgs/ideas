@@ -51,7 +51,9 @@
     console.log('[Buttondown] Adding subscribe card...');
     
     var lang = getCurrentLang();
+    console.log('[Buttondown] Current language:', lang);
     var t = translations[lang] || translations['zh-CN'];
+    console.log('[Buttondown] Using translations:', t);
     
     // 创建订阅卡片
     var card = document.createElement('div');
@@ -90,22 +92,38 @@
   // 更新订阅卡片文本
   function updateSubscribeCardLang() {
     var card = document.querySelector('.card-subscribe');
-    if (!card) return;
+    if (!card) {
+      console.log('[Buttondown] Subscribe card not found for language update');
+      return;
+    }
     
     var lang = getCurrentLang();
     var t = translations[lang] || translations['zh-CN'];
+    console.log('[Buttondown] Updating language to', lang, 'translations:', t);
     
     var titleSpan = card.querySelector('[data-i18n-key="subscribe-title"]');
-    if (titleSpan) titleSpan.textContent = t.title;
+    if (titleSpan) {
+      console.log('[Buttondown] Title:', titleSpan.textContent, '->', t.title);
+      titleSpan.textContent = t.title;
+    }
     
     var descP = card.querySelector('[data-i18n-key="subscribe-desc"]');
-    if (descP) descP.textContent = t.desc;
+    if (descP) {
+      console.log('[Buttondown] Desc:', descP.textContent, '->', t.desc);
+      descP.textContent = t.desc;
+    }
     
     var buttonSpan = card.querySelector('[data-i18n-key="subscribe-button"]');
-    if (buttonSpan) buttonSpan.textContent = t.button;
+    if (buttonSpan) {
+      console.log('[Buttondown] Button:', buttonSpan.textContent, '->', t.button);
+      buttonSpan.textContent = t.button;
+    }
     
     var noteSpan = card.querySelector('[data-i18n-key="subscribe-note"]');
-    if (noteSpan) noteSpan.textContent = t.note;
+    if (noteSpan) {
+      console.log('[Buttondown] Note:', noteSpan.textContent, '->', t.note);
+      noteSpan.textContent = t.note;
+    }
     
     console.log('[Buttondown] Language updated to', lang);
   }
