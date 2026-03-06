@@ -375,6 +375,7 @@
       '文章': { 'zh-CN': '文章', 'en': 'Posts', 'ja': '記事' },
       'Posts': { 'zh-CN': '文章', 'en': 'Posts', 'ja': '記事' },
       '記事': { 'zh-CN': '文章', 'en': 'Posts', 'ja': '記事' },
+      'Articles': { 'zh-CN': '文章', 'en': 'Articles', 'ja': '記事' },  // 主题英文变体
       
       '标签': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
       'Tags': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
@@ -385,10 +386,17 @@
       'カテゴリー': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
     };
     
-    document.querySelectorAll('.site-data a .headline').forEach(function (el) {
+    var statsElements = document.querySelectorAll('.site-data a .headline');
+    console.log('[i18n] 站点统计 - 找到', statsElements.length, '个');
+    
+    statsElements.forEach(function (el) {
       var text = el.textContent.trim();
+      console.log('[i18n] 统计项文本:', JSON.stringify(text));
       if (statsTranslations[text]) {
+        console.log('[i18n] 翻译统计项:', text, '->', statsTranslations[text][lang]);
         el.textContent = statsTranslations[text][lang];
+      } else {
+        console.log('[i18n] 统计项未找到翻译:', text);
       }
     });
 
