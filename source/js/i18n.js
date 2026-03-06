@@ -281,10 +281,17 @@
       '目次': { 'zh-CN': '目录', 'en': 'TOC', 'ja': '目次' },
     };
     
-    document.querySelectorAll('.item-headline span').forEach(function (span) {
+    var headlineSpans = document.querySelectorAll('.item-headline span');
+    console.log('[i18n] 侧边栏标题 - 找到', headlineSpans.length, '个');
+    
+    headlineSpans.forEach(function (span) {
       var text = span.textContent.trim();
+      console.log('[i18n] 侧边栏标题文本:', JSON.stringify(text));
       if (headlineTranslations[text]) {
+        console.log('[i18n] 翻译侧边栏:', text, '->', headlineTranslations[text][lang]);
         span.textContent = headlineTranslations[text][lang];
+      } else {
+        console.log('[i18n] 侧边栏未找到翻译:', text);
       }
     });
 
@@ -361,8 +368,12 @@
     // --- 网站信息项 ---
     var webinfoOrder = ['文章数目', '本站访客数', '本站总浏览量', '最后更新时间'];
     var webinfoEls = document.querySelectorAll('.webinfo-item .item-name');
+    console.log('[i18n] 网站信息项 - 找到', webinfoEls.length, '个');
+    
     webinfoEls.forEach(function (el, i) {
+      console.log('[i18n] 网站信息[' + i + ']文本:', JSON.stringify(el.textContent.trim()));
       if (webinfoOrder[i] && t[webinfoOrder[i]]) {
+        console.log('[i18n] 翻译网站信息:', webinfoOrder[i], '->', t[webinfoOrder[i]]);
         el.textContent = t[webinfoOrder[i]] + ' :';
       }
     });
