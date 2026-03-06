@@ -634,10 +634,29 @@
     applyLang(e.detail.lang);
   });
 
-  // 页面加载时立即应用
+  // 页面加载时应用，并在DOM完全加载后再次过滤
   (function autoInit() {
     var currentLang = getLang();
     console.log('[i18n] Auto-init, lang:', currentLang);
     applyLang(currentLang);
+    
+    // 延迟再次过滤，确保动态内容已加载
+    setTimeout(function() {
+      console.log('[i18n] 延迟过滤（200ms后）');
+      filterPostsByLang(currentLang);
+    }, 200);
+    
+    setTimeout(function() {
+      console.log('[i18n] 延迟过滤（500ms后）');
+      filterPostsByLang(currentLang);
+    }, 500);
   })();
+  
+  // 监听DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('[i18n] DOMContentLoaded触发');
+      filterPostsByLang(getLang());
+    });
+  }
 })();
