@@ -5,7 +5,9 @@ on:
     branches:
       - main
     paths:
-      - 'source/_posts/**'
+      - 'source/**'
+      - 'scripts/**'
+      - 'themes/**'
       - '_config.yml'
       - '_config.butterfly.yml'
       - 'scaffolds/**'
