@@ -1,6 +1,7 @@
 /**
  * 语言过滤 Helper
  * 为 Butterfly 主题的相关推荐和上下篇功能添加语言过滤
+ * 文件名以 zzz 开头确保最后加载，覆盖主题的 related_posts helper
  */
 
 'use strict';
