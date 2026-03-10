@@ -99,7 +99,7 @@
       
       var show = (lang === 'zh-CN' && !isEn && !isJa) ||
                  (lang === 'en' && isEn) ||
-                 (lang === 'ja' && (isJa || isEn));
+                 (lang === 'ja' && isJa);
       
       post.style.display = show ? '' : 'none';
       if (show) visible++;
