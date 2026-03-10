@@ -1,686 +1,299 @@
 /**
- * i18n 国际化脚本 — 森哥 Ideas
- * 支持中英文自动/手动切换
- * 根据浏览器语言自动检测，支持手动切换，localStorage 持久化
+ * i18n.js — 森哥 Ideas 多语言支持
+ * 职责：UI翻译 + 文章过滤
+ * 语言检测：localStorage > 浏览器语言 > en
  */
 (function () {
   'use strict';
 
   var STORAGE_KEY = 'ideas-lang';
 
-  // 翻译映射
-  var translations = {
-    'zh-CN': {
-      '首页': '首页',
-      '归档': '归档',
-      '标签': '标签',
-      '分类': '分类',
-      '关于': '关于',
-      '公告': '公告',
-      '最新文章': '最新文章',
-      '网站信息': '网站信息',
-      '文章数目': '文章数目',
-      '本站访客数': '本站访客数',
-      '本站总浏览量': '本站总浏览量',
-      '最后更新时间': '最后更新时间',
-      '文章': '文章',
-      '标签_stat': '标签',
-      '分类_stat': '分类',
-      '签名': '未来已来，不问前程，顺势而为。',
-      '公告内容': '欢迎来到我的博客！记录想法、技术与生活。',
-      'copyright_by': 'By 森哥',
-      '发表于': '发表于',
-      'lang_switch': '🌐 English',
-      '目录': '目录',
-      '搜索': '搜索',
-      'reward_text': '觉得有帮助？请我喝杯咖啡 ☕',
-      'wechat': '微信',
-      'alipay': '支付宝',
-      'post_author': '文章作者: ',
-      'post_link': '文章链接: ',
-      'copyright_notice': '版权声明: ',
-      'copyright_content': '本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://hongqi-lgs.github.io/ideas" target="_blank">森哥 Ideas</a>！',
-      'prev_post': '上一篇',
-      'next_post': '下一篇',
-      'related_posts': '相关推荐',
+  // ─── 翻译字典 ───────────────────────────────────────────────
+  var T = {
+    menu: {
+      '首页':    { 'zh-CN': '首页',    'en': 'Home',       'ja': 'ホーム' },
+      '归档':    { 'zh-CN': '归档',    'en': 'Archives',   'ja': 'アーカイブ' },
+      '标签':    { 'zh-CN': '标签',    'en': 'Tags',       'ja': 'タグ' },
+      '分类':    { 'zh-CN': '分类',    'en': 'Categories', 'ja': 'カテゴリー' },
+      '关于':    { 'zh-CN': '关于',    'en': 'About',      'ja': 'について' },
+      'Home':         { 'zh-CN': '首页',    'en': 'Home',       'ja': 'ホーム' },
+      'Archives':     { 'zh-CN': '归档',    'en': 'Archives',   'ja': 'アーカイブ' },
+      'Tags':         { 'zh-CN': '标签',    'en': 'Tags',       'ja': 'タグ' },
+      'Categories':   { 'zh-CN': '分类',    'en': 'Categories', 'ja': 'カテゴリー' },
+      'About':        { 'zh-CN': '关于',    'en': 'About',      'ja': 'について' },
+      'ホーム':       { 'zh-CN': '首页',    'en': 'Home',       'ja': 'ホーム' },
+      'アーカイブ':   { 'zh-CN': '归档',    'en': 'Archives',   'ja': 'アーカイブ' },
+      'タグ':         { 'zh-CN': '标签',    'en': 'Tags',       'ja': 'タグ' },
+      'カテゴリー':   { 'zh-CN': '分类',    'en': 'Categories', 'ja': 'カテゴリー' },
+      'カテゴリ':     { 'zh-CN': '分类',    'en': 'Categories', 'ja': 'カテゴリー' },
+      'について':     { 'zh-CN': '关于',    'en': 'About',      'ja': 'について' },
     },
-    'en': {
-      '首页': 'Home',
-      '归档': 'Archives',
-      '标签': 'Tags',
-      '分类': 'Categories',
-      '关于': 'About',
-      '公告': 'Announcement',
-      '最新文章': 'Recent Posts',
-      '网站信息': 'Site Info',
-      '文章数目': 'Posts',
-      '本站访客数': 'Visitors',
-      '本站总浏览量': 'Page Views',
-      '最后更新时间': 'Last Updated',
-      '文章': 'Posts',
-      '标签_stat': 'Tags',
-      '分类_stat': 'Categories',
-      '签名': 'The future is here. No looking back. Go with the flow.',
-      '公告内容': 'Welcome to my blog! Recording ideas, tech & life.',
-      'copyright_by': 'By bob',
-      '发表于': 'Posted on',
-      'lang_switch': '🌐 中文',
-      '目录': 'TOC',
-      '搜索': 'Search',
-      'reward_text': 'Found it helpful? Buy me a coffee ☕',
-      'wechat': 'WeChat',
-      'alipay': 'Alipay',
-      'post_author': 'Author: ',
-      'post_link': 'Post Link: ',
-      'copyright_notice': 'Copyright: ',
-      'copyright_content': 'All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> unless otherwise stated. Please credit <a href="https://hongqi-lgs.github.io/ideas" target="_blank">bob Ideas</a>!',
-      'prev_post': 'Previous',
-      'next_post': 'Next',
-      'related_posts': 'Related Posts',
+    sidebar: {
+      '公告':         { 'zh-CN': '公告',    'en': 'Announcement', 'ja': 'お知らせ' },
+      '最新文章':     { 'zh-CN': '最新文章','en': 'Recent Posts', 'ja': '最新記事' },
+      '网站信息':     { 'zh-CN': '网站信息','en': 'Site Info',    'ja': 'サイト情報' },
+      '目录':         { 'zh-CN': '目录',    'en': 'TOC',          'ja': '目次' },
+      '邮件订阅':     { 'zh-CN': '邮件订阅','en': 'Email Subscribe','ja': 'メール購読' },
+      '分类':         { 'zh-CN': '分类',    'en': 'Categories',   'ja': 'カテゴリー' },
+      '标签':         { 'zh-CN': '标签',    'en': 'Tags',         'ja': 'タグ' },
+      '归档':         { 'zh-CN': '归档',    'en': 'Archives',     'ja': 'アーカイブ' },
+      'Announcement': { 'zh-CN': '公告',    'en': 'Announcement', 'ja': 'お知らせ' },
+      'Recent Posts': { 'zh-CN': '最新文章','en': 'Recent Posts', 'ja': '最新記事' },
+      'Site Info':    { 'zh-CN': '网站信息','en': 'Site Info',    'ja': 'サイト情報' },
+      'TOC':          { 'zh-CN': '目录',    'en': 'TOC',          'ja': '目次' },
+      'Email Subscribe': { 'zh-CN': '邮件订阅','en': 'Email Subscribe','ja': 'メール購読' },
+      'Categories':   { 'zh-CN': '分类',    'en': 'Categories',   'ja': 'カテゴリー' },
+      'Tags':         { 'zh-CN': '标签',    'en': 'Tags',         'ja': 'タグ' },
+      'Archives':     { 'zh-CN': '归档',    'en': 'Archives',     'ja': 'アーカイブ' },
+      'お知らせ':     { 'zh-CN': '公告',    'en': 'Announcement', 'ja': 'お知らせ' },
+      '最新記事':     { 'zh-CN': '最新文章','en': 'Recent Posts', 'ja': '最新記事' },
+      'サイト情報':   { 'zh-CN': '网站信息','en': 'Site Info',    'ja': 'サイト情報' },
+      '目次':         { 'zh-CN': '目录',    'en': 'TOC',          'ja': '目次' },
+      'メール購読':   { 'zh-CN': '邮件订阅','en': 'Email Subscribe','ja': 'メール購読' },
+      'カテゴリー':   { 'zh-CN': '分类',    'en': 'Categories',   'ja': 'カテゴリー' },
+      'カテゴリ':     { 'zh-CN': '分类',    'en': 'Categories',   'ja': 'カテゴリー' },
+      'タグ':         { 'zh-CN': '标签',    'en': 'Tags',         'ja': 'タグ' },
+      'アーカイブ':   { 'zh-CN': '归档',    'en': 'Archives',     'ja': 'アーカイブ' },
     },
-    'ja': {
-      '首页': 'ホーム',
-      '归档': 'アーカイブ',
-      '标签': 'タグ',
-      '分类': 'カテゴリー',
-      '关于': 'について',
-      '公告': 'お知らせ',
-      '最新文章': '最新記事',
-      '网站信息': 'サイト情報',
-      '文章数目': '記事数',
-      '本站访客数': '訪問者数',
-      '本站总浏览量': 'ページビュー',
-      '最后更新时间': '最終更新',
-      '文章': '記事',
-      '标签_stat': 'タグ',
-      '分类_stat': 'カテゴリー',
-      '签名': '未来は来た、前を見ず、流れに従う。',
-      '公告内容': 'ブログへようこそ！アイデア、技術、生活を記録します。',
-      'copyright_by': 'By 森哥',
-      '发表于': '投稿日',
-      'lang_switch': '🌐 中文',
-      '目录': '目次',
-      '搜索': '検索',
-      'reward_text': '役に立ちましたか？コーヒーをおごってください ☕',
-      'wechat': 'WeChat',
-      'alipay': 'Alipay',
-      'post_author': '著者: ',
-      'post_link': '記事リンク: ',
-      'copyright_notice': '著作権: ',
-      'copyright_content': 'このブログのすべての記事は、特に明記されていない限り、<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a>ライセンスの下で提供されます。出典を明記してください <a href="https://hongqi-lgs.github.io/ideas" target="_blank">森哥 Ideas</a>！',
-      'prev_post': '前の記事',
-      'next_post': '次の記事',
-      'related_posts': '関連記事',
-  },
+    stats: {
+      '文章':     { 'zh-CN': '文章', 'en': 'Posts',      'ja': '記事' },
+      '标签':     { 'zh-CN': '标签', 'en': 'Tags',       'ja': 'タグ' },
+      '分类':     { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
+      'Posts':    { 'zh-CN': '文章', 'en': 'Posts',      'ja': '記事' },
+      'Articles': { 'zh-CN': '文章', 'en': 'Posts',      'ja': '記事' },
+      'Tags':     { 'zh-CN': '标签', 'en': 'Tags',       'ja': 'タグ' },
+      'Categories':{ 'zh-CN': '分类','en': 'Categories', 'ja': 'カテゴリー' },
+      '記事':     { 'zh-CN': '文章', 'en': 'Posts',      'ja': '記事' },
+      'タグ':     { 'zh-CN': '标签', 'en': 'Tags',       'ja': 'タグ' },
+      'カテゴリー':{ 'zh-CN': '分类','en': 'Categories', 'ja': 'カテゴリー' },
+    },
+    meta: {
+      '发表于':   { 'zh-CN': '发表于', 'en': 'Posted on', 'ja': '投稿日' },
+      'Posted on':{ 'zh-CN': '发表于', 'en': 'Posted on', 'ja': '投稿日' },
+      '投稿日':   { 'zh-CN': '发表于', 'en': 'Posted on', 'ja': '投稿日' },
+    },
+    pagination: {
+      '上一篇':   { 'zh-CN': '上一篇', 'en': 'Previous', 'ja': '前の記事' },
+      '下一篇':   { 'zh-CN': '下一篇', 'en': 'Next',     'ja': '次の記事' },
+      'Previous': { 'zh-CN': '上一篇', 'en': 'Previous', 'ja': '前の記事' },
+      'Next':     { 'zh-CN': '下一篇', 'en': 'Next',     'ja': '次の記事' },
+      '前の記事': { 'zh-CN': '上一篇', 'en': 'Previous', 'ja': '前の記事' },
+      '次の記事': { 'zh-CN': '下一篇', 'en': 'Next',     'ja': '次の記事' },
+    },
+    related: {
+      '相关推荐':    { 'zh-CN': '相关推荐', 'en': 'Related Posts', 'ja': '関連記事' },
+      'Related Posts':{ 'zh-CN': '相关推荐', 'en': 'Related Posts', 'ja': '関連記事' },
+      '関連記事':   { 'zh-CN': '相关推荐', 'en': 'Related Posts', 'ja': '関連記事' },
+    },
+    sign: {
+      'zh-CN': '未来已来，不问前程，顺势而为。',
+      'en': 'The future is here. No looking back. Go with the flow.',
+      'ja': '未来は来た、前を見ず、流れに従う。',
+    },
+    announce: {
+      'zh-CN': '欢迎来到森哥 Ideas！未来已来，不问前程，顺势而为。',
+      'en': 'Welcome to my blog! Recording ideas, tech & life.',
+      'ja': 'ブログへようこそ！アイデア、技術、生活を記録します。',
+    },
+    reward: {
+      'zh-CN': '觉得有帮助？请我喝杯咖啡 ☕',
+      'en': 'Found it helpful? Buy me a coffee ☕',
+      'ja': '役に立ちましたか？コーヒーをおごってください ☕',
+    },
+    wechat:  { 'zh-CN': '微信',  'en': 'WeChat', 'ja': 'WeChat' },
+    alipay:  { 'zh-CN': '支付宝','en': 'Alipay', 'ja': 'Alipay' },
+    copyright: {
+      by: { 'zh-CN': 'By 森哥', 'en': 'By bob', 'ja': 'By 森哥' },
+      content: {
+        'zh-CN': '本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://hongqi-lgs.github.io/ideas" target="_blank">森哥 Ideas</a>！',
+        'en': 'All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> unless otherwise stated. Please credit <a href="https://hongqi-lgs.github.io/ideas" target="_blank">bob Ideas</a>!',
+        'ja': 'このブログのすべての記事は、特に明記されていない限り、<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a>ライセンスの下で提供されます。出典を明記してください <a href="https://hongqi-lgs.github.io/ideas" target="_blank">森哥 Ideas</a>！',
+      },
+      author: { 'zh-CN': '文章作者: ', 'en': 'Author: ',    'ja': '著者: ' },
+      link:   { 'zh-CN': '文章链接: ', 'en': 'Post Link: ', 'ja': '記事リンク: ' },
+      notice: { 'zh-CN': '版权声明: ', 'en': 'Copyright: ', 'ja': '著作権: ' },
+    },
   };
 
-  // 双向查找表：任意文本 → 翻译 key
-  var textToKey = {};
-  Object.keys(translations).forEach(function (lang) {
-    var t = translations[lang];
-    Object.keys(t).forEach(function (key) {
-      textToKey[t[key]] = key;
-    });
-  });
-
+  // ─── 语言检测 ────────────────────────────────────────────────
   function getLang() {
     var stored = localStorage.getItem(STORAGE_KEY);
-    if (stored && translations[stored]) return stored;
-    var browserLang = (navigator.language || navigator.userLanguage || '').toLowerCase();
-    if (browserLang.startsWith('zh')) return 'zh-CN';
-    if (browserLang.startsWith('ja')) return 'ja';
+    if (stored && ['zh-CN', 'en', 'ja'].indexOf(stored) !== -1) return stored;
+    var bl = (navigator.language || navigator.userLanguage || '').toLowerCase();
+    if (bl.startsWith('zh')) return 'zh-CN';
+    if (bl.startsWith('ja')) return 'ja';
     return 'en';
   }
 
   function setLang(lang) {
     localStorage.setItem(STORAGE_KEY, lang);
-    applyLang(lang);
   }
 
-
-  // 判断是否在文章详情页或关于页面
-  function isPostPage() {
-    var path = window.location.pathname;
-    
-    // 关于页面支持语言切换
-    if (path.indexOf('/about/') !== -1) {
-      return true;
-    }
-    
-    // 排除其他特殊页面
-    var specialPages = ['/tags/', '/categories/', '/archives/', '/link/'];
-    for (var i = 0; i < specialPages.length; i++) {
-      if (path.indexOf(specialPages[i]) !== -1 && path.replace(/.*\/ideas/, '').replace(specialPages[i], '').replace(/\//g, '') === '') {
-        return false;
-      }
-    }
-    // 首页
-    var rootPath = '/ideas/';
-    if (path === rootPath || path === rootPath.slice(0, -1) || path === '/') {
-      return false;
-    }
-    // 有文章内容元素
-    return !!document.getElementById('post') || !!document.querySelector('.post');
+  // ─── URL 判断文章语言 ─────────────────────────────────────────
+  function postLangFromHref(href) {
+    if (!href) return 'zh-CN';
+    if (/-en[\/\?#]/.test(href) || /-en$/.test(href)) return 'en';
+    if (/-ja[\/\?#]/.test(href) || /-ja$/.test(href)) return 'ja';
+    return 'zh-CN';
   }
 
-  // 获取对应语言版本的文章路径
-  function getTranslatedPostPath(targetLang) {
-    var path = window.location.pathname;
-    var cleanPath = path.replace(/\/+$/, '');
-
-    // 关于页面
-    if (cleanPath.indexOf('/about') !== -1) {
-      if (targetLang === 'ja') {
-        return cleanPath.match(/index-ja/) ? null : '/about/index-ja.html';
-      } else if (targetLang === 'en') {
-        return cleanPath.match(/index-en/) ? null : '/about/index-en.html';
-      } else {
-        return cleanPath.match(/index-(en|ja)/) ? '/about/' : null;
-      }
-    }
-
-    // 文章页面 - 优先日文，回退英文
-    var currentIsJa = cleanPath.match(/-ja$/);
-    var currentIsEn = cleanPath.match(/-en$/);
-    var basePath = cleanPath.replace(/-(en|ja)$/, '');
-
-    if (targetLang === 'ja') {
-      return currentIsJa ? null : basePath + '-ja/';
-    } else if (targetLang === 'en') {
-      return currentIsEn ? null : basePath + '-en/';
-    } else {
-      return (currentIsJa || currentIsEn) ? basePath + '/' : null;
-    }
+  // ─── 翻译辅助 ────────────────────────────────────────────────
+  function tr(dict, text, lang) {
+    return (dict[text] && dict[text][lang]) || null;
   }
 
-  // 核心：应用语言到所有 UI 元素
-  function applyLang(lang) {
-    var t = translations[lang];
-    if (!t) return;
+  function translateEl(dict, el, lang) {
+    var text = el.textContent.trim();
+    var result = tr(dict, text, lang);
+    if (result) el.textContent = result;
+  }
 
-    document.documentElement.setAttribute('data-lang', lang);
-
-    // --- 页面 Title ---
-    var currentTitle = document.title;
-    // 处理不同页面类型的 title
-    if (currentTitle.includes('归档') || currentTitle.includes('Archives')) {
-      document.title = lang === 'ja' ? 'アーカイブ - 森哥 Ideas' : (lang === 'en' ? 'Archives - bob Ideas' : '归档 - 森哥 Ideas');
-    } else if (currentTitle.includes('标签') || currentTitle.includes('Tags')) {
-      document.title = lang === 'ja' ? 'タグ - 森哥 Ideas' : (lang === 'en' ? 'Tags - bob Ideas' : '标签 - 森哥 Ideas');
-    } else if (currentTitle.includes('分类') || currentTitle.includes('Categories')) {
-      document.title = lang === 'ja' ? 'カテゴリー - 森哥 Ideas' : (lang === 'en' ? 'Categories - bob Ideas' : '分类 - 森哥 Ideas');
-    } else if (currentTitle.includes('关于') || currentTitle.includes('About')) {
-      document.title = lang === 'ja' ? 'について - 森哥 Ideas' : (lang === 'en' ? 'About - bob Ideas' : '关于 - 森哥 Ideas');
-    } else if (currentTitle === '森哥 Ideas' || currentTitle === 'bob Ideas' || currentTitle === '红齐 Ideas' || currentTitle === 'Hongqi Ideas') {
-      // 首页
-      document.title = lang === 'ja' ? '森哥 Ideas' : (lang === 'en' ? 'bob Ideas' : '森哥 Ideas');
-    }
-    // 文章详情页的 title 由 post-map 中的数据替换（如果需要）
-
-    // --- 菜单项 ---
-    // 菜单项：直接文本匹配（支持中英日互译）
-    var menuTranslations = {
-      '首页': { 'zh-CN': '首页', 'en': 'Home', 'ja': 'ホーム' },
-      'Home': { 'zh-CN': '首页', 'en': 'Home', 'ja': 'ホーム' },
-      'ホーム': { 'zh-CN': '首页', 'en': 'Home', 'ja': 'ホーム' },
-      
-      '归档': { 'zh-CN': '归档', 'en': 'Archives', 'ja': 'アーカイブ' },
-      'Archives': { 'zh-CN': '归档', 'en': 'Archives', 'ja': 'アーカイブ' },
-      'アーカイブ': { 'zh-CN': '归档', 'en': 'Archives', 'ja': 'アーカイブ' },
-      
-      '标签': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
-      'Tags': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
-      'タグ': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
-      
-      '分类': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
-      'Categories': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
-      'カテゴリー': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
-      'カテゴリ': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },  // 短音版本
-      
-      '关于': { 'zh-CN': '关于', 'en': 'About', 'ja': 'について' },
-      'About': { 'zh-CN': '关于', 'en': 'About', 'ja': 'について' },
-      'について': { 'zh-CN': '关于', 'en': 'About', 'ja': 'について' },
-    };
-    
-    var menuSpans = document.querySelectorAll('.menus_item a.site-page span, #sidebar-menus .menus_item a span');
-    console.log('[i18n] 菜单翻译 - 找到', menuSpans.length, '个菜单项，当前语言:', lang);
-    
-    menuSpans.forEach(function (span) {
-      var text = span.textContent.trim();
-      console.log('[i18n] 菜单项文本:', JSON.stringify(text), '字符码:', Array.from(text).map(c => c.charCodeAt(0)));
-      if (menuTranslations[text]) {
-        var newText = menuTranslations[text][lang];
-        console.log('[i18n] 翻译:', text, '->', newText);
-        span.textContent = ' ' + newText;
-      } else {
-        console.log('[i18n] 未找到翻译:', text, '- 可用的keys:', Object.keys(menuTranslations).filter(k => k.includes('カ') || k.includes('分')));
-      }
+  // ─── 应用 UI 翻译 ─────────────────────────────────────────────
+  function applyTranslations(lang) {
+    // 菜单
+    document.querySelectorAll('.menus_item a.site-page span, #sidebar-menus .menus_item a span').forEach(function(el) {
+      translateEl(T.menu, el, lang);
     });
 
-    // --- 语言切换按钮 ---
-    document.querySelectorAll('[data-i18n-role="lang-switch"]').forEach(function (btn) {
-      var span = btn.querySelector('span');
-      if (span) span.textContent = ' ' + t['lang_switch'];
+    // 侧边栏标题
+    document.querySelectorAll('.item-headline span').forEach(function(el) {
+      translateEl(T.sidebar, el, lang);
     });
 
-    // --- 侧边栏标题 ---
-    var headlineTranslations = {
-      '公告': { 'zh-CN': '公告', 'en': 'Announcement', 'ja': 'お知らせ' },
-      'Announcement': { 'zh-CN': '公告', 'en': 'Announcement', 'ja': 'お知らせ' },
-      'お知らせ': { 'zh-CN': '公告', 'en': 'Announcement', 'ja': 'お知らせ' },
-      
-      '最新文章': { 'zh-CN': '最新文章', 'en': 'Recent Posts', 'ja': '最新記事' },
-      'Recent Posts': { 'zh-CN': '最新文章', 'en': 'Recent Posts', 'ja': '最新記事' },
-      '最新記事': { 'zh-CN': '最新文章', 'en': 'Recent Posts', 'ja': '最新記事' },
-      
-      '网站信息': { 'zh-CN': '网站信息', 'en': 'Site Info', 'ja': 'サイト情報' },
-      'Site Info': { 'zh-CN': '网站信息', 'en': 'Site Info', 'ja': 'サイト情報' },
-      'サイト情報': { 'zh-CN': '网站信息', 'en': 'Site Info', 'ja': 'サイト情報' },
-      
-      '目录': { 'zh-CN': '目录', 'en': 'TOC', 'ja': '目次' },
-      'TOC': { 'zh-CN': '目录', 'en': 'TOC', 'ja': '目次' },
-      '目次': { 'zh-CN': '目录', 'en': 'TOC', 'ja': '目次' },
-      
-      '邮件订阅': { 'zh-CN': '邮件订阅', 'en': 'Email Subscribe', 'ja': 'メール購読' },
-      'Email Subscribe': { 'zh-CN': '邮件订阅', 'en': 'Email Subscribe', 'ja': 'メール購読' },
-      'メール購読': { 'zh-CN': '邮件订阅', 'en': 'Email Subscribe', 'ja': 'メール購読' },
-      
-      // 分类/标签/归档（可能出现在侧边栏）
-      '分类': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
-      'Categories': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
-      'カテゴリー': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
-      'カテゴリ': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
-      
-      '标签': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
-      'Tags': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
-      'タグ': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
-      
-      '归档': { 'zh-CN': '归档', 'en': 'Archives', 'ja': 'アーカイブ' },
-      'Archives': { 'zh-CN': '归档', 'en': 'Archives', 'ja': 'アーカイブ' },
-      'アーカイブ': { 'zh-CN': '归档', 'en': 'Archives', 'ja': 'アーカイブ' },
-    };
-    
-    var headlineSpans = document.querySelectorAll('.item-headline span');
-    console.log('[i18n] 侧边栏标题 - 找到', headlineSpans.length, '个');
-    
-    headlineSpans.forEach(function (span) {
-      var text = span.textContent.trim();
-      console.log('[i18n] 侧边栏标题文本:', JSON.stringify(text));
-      if (headlineTranslations[text]) {
-        console.log('[i18n] 翻译侧边栏:', text, '->', headlineTranslations[text][lang]);
-        span.textContent = headlineTranslations[text][lang];
-      } else {
-        console.log('[i18n] 侧边栏未找到翻译:', text);
-      }
+    // 站点统计
+    document.querySelectorAll('.site-data a .headline').forEach(function(el) {
+      translateEl(T.stats, el, lang);
     });
 
-    // --- 分类/标签/归档 卡片标题 ---
-    var cardTranslations = {
-      '分类': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
-      'Categories': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
-      'カテゴリー': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
-      'カテゴリ': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },  // 短音版本
-      
-      '标签': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
-      'Tags': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
-      'タグ': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
-      
-      '归档': { 'zh-CN': '归档', 'en': 'Archives', 'ja': 'アーカイブ' },
-      'Archives': { 'zh-CN': '归档', 'en': 'Archives', 'ja': 'アーカイブ' },
-      'アーカイブ': { 'zh-CN': '归档', 'en': 'Archives', 'ja': 'アーカイブ' },
-    };
-    
-    var cardSpans = document.querySelectorAll('.card-categories .item-headline span, .card-tag-cloud .item-headline span, .card-archives .item-headline span');
-    console.log('[i18n] 卡片标题 - 找到', cardSpans.length, '个');
-    
-    cardSpans.forEach(function (span) {
-      var text = span.textContent.trim();
-      console.log('[i18n] 卡片标题文本:', JSON.stringify(text), '字符码:', Array.from(text).map(c => c.charCodeAt(0)));
-      if (cardTranslations[text]) {
-        console.log('[i18n] 翻译卡片:', text, '->', cardTranslations[text][lang]);
-        span.textContent = cardTranslations[text][lang];
-      } else {
-        console.log('[i18n] 卡片未找到翻译:', text);
-      }
+    // 文章元信息
+    document.querySelectorAll('.article-meta-label').forEach(function(el) {
+      translateEl(T.meta, el, lang);
     });
 
-    // --- 作者名称（森哥 → bob） ---
-    document.querySelectorAll('.author-info-name').forEach(function (el) {
-      if (lang === 'en') {
-        el.textContent = 'bob';
-      } else {
-        el.textContent = '森哥';
-      }
+    // 上一篇/下一篇
+    document.querySelectorAll('.pagination-post .info-item-1').forEach(function(el) {
+      translateEl(T.pagination, el, lang);
     });
 
-    // --- 网站标题（森哥 Ideas） ---
-    document.querySelectorAll('.site-name, .nav-site-title .site-name').forEach(function (el) {
-      if (lang === 'en') {
-        el.textContent = 'bob Ideas';
-      } else {
-        el.textContent = '森哥 Ideas';
-      }
+    // 相关推荐标题
+    var relEl = document.querySelector('.relatedPosts .headline span');
+    if (relEl) translateEl(T.related, relEl, lang);
+
+    // 作者名/描述/签名
+    document.querySelectorAll('.author-info-name').forEach(function(el) {
+      el.textContent = lang === 'en' ? 'bob' : '森哥';
     });
-
-    // --- 作者描述 ---
-    var authorDesc = document.querySelector('.author-info-description');
-    if (authorDesc) authorDesc.textContent = t['签名'];
-
-    // --- 公告内容 ---
-    var announcement = document.querySelector('.announcement_content');
-    if (announcement) announcement.textContent = t['公告内容'];
-
-    // --- 站点统计 (文章/标签/分类) ---
-    var statsTranslations = {
-      '文章': { 'zh-CN': '文章', 'en': 'Posts', 'ja': '記事' },
-      'Posts': { 'zh-CN': '文章', 'en': 'Posts', 'ja': '記事' },
-      '記事': { 'zh-CN': '文章', 'en': 'Posts', 'ja': '記事' },
-      'Articles': { 'zh-CN': '文章', 'en': 'Articles', 'ja': '記事' },  // 主题英文变体
-      
-      '标签': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
-      'Tags': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
-      'タグ': { 'zh-CN': '标签', 'en': 'Tags', 'ja': 'タグ' },
-      
-      '分类': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
-      'Categories': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
-      'カテゴリー': { 'zh-CN': '分类', 'en': 'Categories', 'ja': 'カテゴリー' },
-    };
-    
-    var statsElements = document.querySelectorAll('.site-data a .headline');
-    console.log('[i18n] 站点统计 - 找到', statsElements.length, '个');
-    
-    statsElements.forEach(function (el) {
-      var text = el.textContent.trim();
-      console.log('[i18n] 统计项文本:', JSON.stringify(text));
-      if (statsTranslations[text]) {
-        console.log('[i18n] 翻译统计项:', text, '->', statsTranslations[text][lang]);
-        el.textContent = statsTranslations[text][lang];
-      } else {
-        console.log('[i18n] 统计项未找到翻译:', text);
-      }
+    document.querySelectorAll('.site-name').forEach(function(el) {
+      el.textContent = lang === 'en' ? 'bob Ideas' : '森哥 Ideas';
     });
+    var desc = document.querySelector('.author-info-description');
+    if (desc) desc.textContent = T.sign[lang];
 
-    // --- 网站信息项 ---
-    var webinfoOrder = ['文章数目', '本站访客数', '本站总浏览量', '最后更新时间'];
-    var webinfoEls = document.querySelectorAll('.webinfo-item .item-name');
-    console.log('[i18n] 网站信息项 - 找到', webinfoEls.length, '个');
-    
-    webinfoEls.forEach(function (el, i) {
-      console.log('[i18n] 网站信息[' + i + ']文本:', JSON.stringify(el.textContent.trim()));
-      if (webinfoOrder[i] && t[webinfoOrder[i]]) {
-        console.log('[i18n] 翻译网站信息:', webinfoOrder[i], '->', t[webinfoOrder[i]]);
-        el.textContent = t[webinfoOrder[i]] + ' :';
-      }
-    });
+    // 公告
+    var ann = document.querySelector('.announcement_content');
+    if (ann) ann.textContent = T.announce[lang];
 
-    // --- 文章元信息 "发表于" ---
-    var metaTranslations = {
-      '发表于': { 'zh-CN': '发表于', 'en': 'Posted on', 'ja': '投稿日' },
-      'Posted on': { 'zh-CN': '发表于', 'en': 'Posted on', 'ja': '投稿日' },
-      '投稿日': { 'zh-CN': '发表于', 'en': 'Posted on', 'ja': '投稿日' },
-    };
-    
-    document.querySelectorAll('.article-meta-label').forEach(function (el) {
-      var text = el.textContent.trim();
-      if (metaTranslations[text]) {
-        el.textContent = metaTranslations[text][lang];
-      }
-    });
+    // Footer
+    var foot = document.querySelector('#footer .copyright');
+    if (foot) foot.innerHTML = '&copy;&nbsp;2026 ' + T.copyright.by[lang];
 
-    // --- Footer ---
-    var copyright = document.querySelector('#footer .copyright');
-    if (copyright) {
-      copyright.innerHTML = '&copy;&nbsp;2026 ' + t['copyright_by'];
-    }
-
-    // --- 打赏区域 ---
+    // 打赏
     var rewardBtn = document.querySelector('.reward-button');
     if (rewardBtn) {
       var icon = rewardBtn.querySelector('i');
+      rewardBtn.innerHTML = (icon ? icon.outerHTML : '') + T.reward[lang];
+    }
+    document.querySelectorAll('.post-qr-code-desc').forEach(function(el) {
+      var t = el.textContent.trim();
+      if (t === '微信' || t === 'WeChat') el.textContent = T.wechat[lang];
+      if (t === '支付宝' || t === 'Alipay') el.textContent = T.alipay[lang];
+    });
+
+    // 版权
+    document.querySelectorAll('.post-copyright-meta').forEach(function(el) {
+      var t = el.textContent.trim();
+      var icon = el.querySelector('i');
       var iconHtml = icon ? icon.outerHTML : '';
-      rewardBtn.innerHTML = iconHtml + t['reward_text'];
-    }
-    var qrDescs = document.querySelectorAll('.post-qr-code-desc');
-    qrDescs.forEach(function (desc) {
-      var text = desc.textContent.trim();
-      if (text === '微信' || text === 'WeChat') desc.textContent = t['wechat'];
-      if (text === '支付宝' || text === 'Alipay') desc.textContent = t['alipay'];
+      if (t.includes('文章作者') || t.includes('Author') || t.includes('著者'))
+        el.innerHTML = iconHtml + T.copyright.author[lang];
+      else if (t.includes('文章链接') || t.includes('Post Link') || t.includes('記事リンク'))
+        el.innerHTML = iconHtml + T.copyright.link[lang];
+      else if (t.includes('版权') || t.includes('Copyright') || t.includes('著作権'))
+        el.innerHTML = iconHtml + T.copyright.notice[lang];
     });
-    // 二维码图片 alt 也翻译
-    document.querySelectorAll('.post-qr-code-img').forEach(function (img) {
-      var alt = img.getAttribute('alt') || '';
-      if (alt === '微信' || alt === 'WeChat') img.setAttribute('alt', t['wechat']);
-      if (alt === '支付宝' || alt === 'Alipay') img.setAttribute('alt', t['alipay']);
-    });
-
-    // --- 文章版权区域 ---
-    document.querySelectorAll('.post-copyright-meta').forEach(function (el) {
-      var text = el.textContent.trim();
-      if (text.includes('文章作者') || text.includes('Author')) {
-        el.innerHTML = el.querySelector('i').outerHTML + t['post_author'] + ' ';
-      } else if (text.includes('文章链接') || text.includes('Post Link')) {
-        el.innerHTML = el.querySelector('i').outerHTML + t['post_link'] + ' ';
-      } else if (text.includes('版权声明') || text.includes('Copyright')) {
-        el.innerHTML = el.querySelector('i').outerHTML + t['copyright_notice'] + ' ';
-      }
-    });
-    // 版权声明内容
     var copyrightInfo = document.querySelector('.post-copyright__notice .post-copyright-info');
-    if (copyrightInfo) {
-      copyrightInfo.innerHTML = t['copyright_content'];
-    }
-
-    // --- 上一篇/下一篇 ---
-    var paginationTranslations = {
-      '上一篇': { 'zh-CN': '上一篇', 'en': 'Previous', 'ja': '前の記事' },
-      'Previous': { 'zh-CN': '上一篇', 'en': 'Previous', 'ja': '前の記事' },
-      '前の記事': { 'zh-CN': '上一篇', 'en': 'Previous', 'ja': '前の記事' },
-      
-      '下一篇': { 'zh-CN': '下一篇', 'en': 'Next', 'ja': '次の記事' },
-      'Next': { 'zh-CN': '下一篇', 'en': 'Next', 'ja': '次の記事' },
-      '次の記事': { 'zh-CN': '下一篇', 'en': 'Next', 'ja': '次の記事' },
-    };
-    
-    document.querySelectorAll('.pagination-post .info-item-1').forEach(function (el) {
-      var text = el.textContent.trim();
-      if (paginationTranslations[text]) {
-        el.textContent = paginationTranslations[text][lang];
-      }
-    });
-
-    // --- 相关推荐 ---
-    var relatedTranslations = {
-      '相关推荐': { 'zh-CN': '相关推荐', 'en': 'Related Posts', 'ja': '関連記事' },
-      'Related Posts': { 'zh-CN': '相关推荐', 'en': 'Related Posts', 'ja': '関連記事' },
-      '関連記事': { 'zh-CN': '相关推荐', 'en': 'Related Posts', 'ja': '関連記事' },
-    };
-    
-    var relatedHeadline = document.querySelector('.relatedPosts .headline span');
-    if (relatedHeadline) {
-      var rText = relatedHeadline.textContent.trim();
-      if (relatedTranslations[rText]) {
-        relatedHeadline.textContent = relatedTranslations[rText][lang];
-      }
-    }
-
-    // --- 首页文章列表语言过滤 ---
-    filterPostsByLang(lang);
+    if (copyrightInfo) copyrightInfo.innerHTML = T.copyright.content[lang];
   }
 
-  // 根据URL判断文章语言
-  function getPostLang(href) {
-    if (/-en\//.test(href) || /-en$/.test(href)) return 'en';
-    if (/-ja\//.test(href) || /-ja$/.test(href)) return 'ja';
-    return 'zh-CN';
-  }
-  
-  // 根据语言过滤首页文章卡片、归档页面和侧边栏最新文章
-  function filterPostsByLang(lang) {
-    console.log('[i18n] 过滤文章列表，当前语言:', lang);
-    
-    // 首页文章卡片
-    var postItems = document.querySelectorAll('.recent-post-item');
-    var homeVisible = 0;
-    postItems.forEach(function (item, index) {
+  // ─── 文章过滤 ─────────────────────────────────────────────────
+  function filterPosts(lang) {
+    // 首页卡片（用分类 URL 判断）
+    document.querySelectorAll('.recent-post-item').forEach(function(item) {
       var catLink = item.querySelector('.article-meta__categories');
-      var isEnglish = false;
-      var isJapanese = false;
-      var catHref = '';
-      var catText = '';
-      
-      if (catLink) {
-        catHref = catLink.getAttribute('href') || '';
-        catText = catLink.textContent.trim();
-        // 只依赖 URL 判断，不依赖文本（因为文本会被翻译）
-        isEnglish = catHref.indexOf('/English') !== -1;
-        isJapanese = catHref.indexOf('/Japanese') !== -1;
-      }
-      
-      // 调试日志
-      if (index < 3) {
-        console.log('[i18n] 文章' + index + ':', {
-          href: catHref,
-          text: catText,
-          isEnglish: isEnglish,
-          isJapanese: isJapanese
-        });
-      }
-      
-      var show = false;
-      if (lang === 'en') {
-        show = isEnglish;
-      } else if (lang === 'zh-CN') {
-        show = !isEnglish && !isJapanese;
-      } else if (lang === 'ja') {
-        show = isJapanese;  // 日语：只显示日文文章
-      }
-      
+      var catHref = catLink ? (catLink.getAttribute('href') || '') : '';
+      var isEn = catHref.indexOf('/English') !== -1;
+      var isJa = catHref.indexOf('/Japanese') !== -1;
+      var show = (lang === 'en' && isEn) ||
+                 (lang === 'ja' && isJa) ||
+                 (lang === 'zh-CN' && !isEn && !isJa);
       item.style.display = show ? '' : 'none';
-      if (show) homeVisible++;
     });
-    if (postItems.length > 0) {
-      console.log('[i18n] 首页显示:', homeVisible, '/', postItems.length);
-      // 如果过滤后文章太少，在控制台提示
-      if (homeVisible < 5 && postItems.length >= 10) {
-        console.log('[i18n] 提示：当前页过滤后文章较少(' + homeVisible + '篇)，建议翻页查看更多内容');
-      }
-    }
-    
-    // 归档/标签/分类页面文章列表
-    var archiveItems = document.querySelectorAll('.article-sort-item');
-    var archiveVisible = 0;
-    var archiveTotal = 0;
-    
-    archiveItems.forEach(function (item) {
-      // 跳过年份标题
+
+    // 归档/标签/分类页面列表（用文章 URL 判断）
+    document.querySelectorAll('.article-sort-item').forEach(function(item) {
       if (item.classList.contains('year')) return;
-      
       var link = item.querySelector('.article-sort-item-title');
       if (!link) return;
-      
-      archiveTotal++;
-      var href = link.getAttribute('href') || '';
-      var postLang = getPostLang(href);
-      
-      var show = false;
-      if (lang === 'en') {
-        show = (postLang === 'en');
-      } else if (lang === 'zh-CN') {
-        show = (postLang === 'zh-CN');
-      } else if (lang === 'ja') {
-        show = (postLang === 'ja');  // 日语：只显示日文文章
-      }
-      
-      item.style.display = show ? '' : 'none';
-      if (show) archiveVisible++;
+      var pl = postLangFromHref(link.getAttribute('href'));
+      item.style.display = (pl === lang) ? '' : 'none';
     });
-    
-    if (archiveTotal > 0) {
-      console.log('[i18n] 归档/标签/分类显示:', archiveVisible, '/', archiveTotal);
-    }
 
     // 侧边栏最新文章
-    var asideItems = document.querySelectorAll('.card-recent-post .aside-list-item');
-    asideItems.forEach(function (item) {
+    document.querySelectorAll('.card-recent-post .aside-list-item').forEach(function(item) {
       var link = item.querySelector('a.title');
       if (!link) return;
-      var href = link.getAttribute('href') || '';
-      // 只依赖 URL 判断语言
-      var postLang = getPostLang(href);
-      var show = false;
-      if (lang === 'en') {
-        show = (postLang === 'en');
-      } else if (lang === 'zh-CN') {
-        show = (postLang === 'zh-CN');
-      } else if (lang === 'ja') {
-        show = (postLang === 'ja');
-      }
-      item.style.display = show ? '' : 'none';
+      var pl = postLangFromHref(link.getAttribute('href'));
+      item.style.display = (pl === lang) ? '' : 'none';
+    });
+
+    // 相关推荐
+    document.querySelectorAll('.relatedPosts .relatedPost-item').forEach(function(item) {
+      var link = item.querySelector('a');
+      if (!link) return;
+      var pl = postLangFromHref(link.getAttribute('href'));
+      item.style.display = (pl === lang) ? '' : 'none';
     });
   }
 
+  // ─── 统一入口 ─────────────────────────────────────────────────
+  function apply() {
+    var lang = getLang();
+    applyTranslations(lang);
+    filterPosts(lang);
+  }
 
-
-
-
-  // 暴露全局 API
+  // ─── 暴露 API ─────────────────────────────────────────────────
   window.i18n = {
     getLang: getLang,
-    setLang: setLang,
-    apply: function () { applyLang(getLang()); }
+    setLang: function(lang) {
+      setLang(lang);
+      apply();
+    },
+    apply: apply,
   };
 
-  // 监听语言切换事件
-  window.addEventListener('langchange', function(e) {
-    console.log('[i18n] langchange event:', e.detail.lang);
-    applyLang(e.detail.lang);
-  });
-
-  // 页面加载时应用翻译，用 MutationObserver 等待文章列表出现后再过滤
-  (function autoInit() {
-    var currentLang = getLang();
-    console.log('[i18n] Auto-init, lang:', currentLang);
-    applyLang(currentLang);
-
-    // 用 MutationObserver 监听 #recent-posts 或 .article-sort 出现
-    var observed = false;
-    function tryFilter() {
-      var posts = document.querySelectorAll('.recent-post-item');
-      var archive = document.querySelectorAll('.article-sort-item');
-      if (posts.length > 0 || archive.length > 0) {
-        console.log('[i18n] 文章列表已就绪，执行过滤');
-        filterPostsByLang(getLang());
-        return true;
-      }
-      return false;
+  // ─── 初始化：等 DOM ready 后执行一次 ──────────────────────────
+  function ready(fn) {
+    if (document.readyState !== 'loading') {
+      fn();
+    } else {
+      document.addEventListener('DOMContentLoaded', fn);
     }
+  }
 
-    // 先尝试一次（静态渲染时直接命中）
-    if (!tryFilter()) {
-      // 未命中则用 MutationObserver 等待 DOM 变化
-      var observer = new MutationObserver(function() {
-        if (observed) return;
-        if (tryFilter()) {
-          observed = true;
-          observer.disconnect();
-        }
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
+  ready(apply);
 
-      // 兜底：3秒后强制执行一次
-      setTimeout(function() {
-        if (!observed) {
-          console.log('[i18n] 兜底过滤（3s）');
-          filterPostsByLang(getLang());
-          observer.disconnect();
-        }
-      }, 3000);
-    }
-  })();
+  // 监听 PJAX 完成（Butterfly 主题）
+  document.addEventListener('pjax:complete', apply);
 
-  // 监听 PJAX 完成事件（Butterfly 主题用 pjax:complete）
-  document.addEventListener('pjax:complete', function() {
-    console.log('[i18n] pjax:complete，重新应用');
-    applyLang(getLang());
-  });
 })();
