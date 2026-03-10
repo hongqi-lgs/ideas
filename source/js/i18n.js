@@ -605,16 +605,17 @@
       var link = item.querySelector('a.title');
       if (!link) return;
       var href = link.getAttribute('href') || '';
-      var title = link.textContent.trim();
-      // 判断是否英文文章：URL 包含 -en/ 或标题全英文
-      var isEnglish = /-en\/?$/.test(href) || /^[A-Za-z0-9\s\?\!\.\,\-\:\'\"]+$/.test(title);
+      // 只依赖 URL 判断语言
+      var postLang = getPostLang(href);
+      var show = false;
       if (lang === 'en') {
-        item.style.display = isEnglish ? '' : 'none';
+        show = (postLang === 'en');
       } else if (lang === 'zh-CN') {
-        item.style.display = isEnglish ? 'none' : '';
-      } else {
-        item.style.display = isEnglish ? '' : 'none';
+        show = (postLang === 'zh-CN');
+      } else if (lang === 'ja') {
+        show = (postLang === 'ja');
       }
+      item.style.display = show ? '' : 'none';
     });
   }
 
