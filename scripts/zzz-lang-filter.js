@@ -15,9 +15,15 @@ function detectPostLang(post) {
   
   // 检查分类
   if (post.categories) {
-    const cats = post.categories.toArray();
-    if (cats.some(c => c.name === 'English')) return 'en';
-    if (cats.some(c => c.name === 'Japanese')) return 'ja';
+    const cats = post.categories.toArray ? post.categories.toArray() : (Array.isArray(post.categories) ? post.categories : []);
+    if (cats && cats.length > 0) {
+      // 检查对象数组 (Hexo 对象)
+      if (cats.some(c => c && c.name === 'English')) return 'en';
+      if (cats.some(c => c && c.name === 'Japanese')) return 'ja';
+      // 检查字符串数组
+      if (cats.includes('English')) return 'en';
+      if (cats.includes('Japanese')) return 'ja';
+    }
   }
   
   // 检查 slug 后缀
