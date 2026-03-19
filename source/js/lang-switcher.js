@@ -51,15 +51,23 @@
 
   function makeSelect(lang) {
     var sel = document.createElement('select');
-    sel.style.cssText = 'padding:4px 8px;border:1px solid rgba(255,255,255,0.35);border-radius:4px;background:rgba(255,255,255,0.15);color:#fff;cursor:pointer;font-size:14px;outline:none;';
+    sel.style.cssText = 'padding:4px 28px 4px 10px;border:1px solid #c8bfb0;border-radius:6px;background:#faf8f4;color:#3a3128;cursor:pointer;font-size:13px;font-weight:500;outline:none;appearance:none;-webkit-appearance:none;transition:border-color 0.2s ease,box-shadow 0.2s ease;';
     [['zh-CN','🇨🇳 中文'],['en','🇺🇸 EN'],['ja','🇯🇵 日本語']].forEach(function(o) {
       var opt = document.createElement('option');
       opt.value = o[0]; opt.textContent = o[1];
-      opt.style.cssText = 'background:#333;color:#fff;';
+      opt.style.cssText = 'background:#faf8f4;color:#3a3128;';
       if (o[0] === lang) opt.selected = true;
       sel.appendChild(opt);
     });
     sel.addEventListener('change', function() { switchLang(this.value); });
+    sel.addEventListener('mouseover', function() {
+      this.style.borderColor = '#8b6f47';
+      this.style.boxShadow = '0 0 0 2px rgba(139,111,71,0.12)';
+    });
+    sel.addEventListener('mouseout', function() {
+      this.style.borderColor = '#c8bfb0';
+      this.style.boxShadow = 'none';
+    });
     return sel;
   }
 

@@ -156,12 +156,25 @@ body {
 }
 
 /* 覆盖主题 nav-fixed 状态下隐藏头像的逻辑 */
-#page-header.nav-fixed #nav #blog-info > a:first-child {
+#page-header.nav-fixed #nav #blog-info > a.nav-site-title {
   display: inline-flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
 }
 
-#page-header.nav-fixed #nav #blog-info > a:last-child {
+#page-header.nav-fixed #nav #blog-info > a.nav-page-title {
   display: none !important;
+}
+
+/* blog-info 垂直居中 */
+#nav #blog-info {
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+#nav #blog-info a {
+  display: inline-flex !important;
+  align-items: center !important;
 }
 #nav .site-page:first-child img,
 /* 导航栏头像 - 圆框包裹（高优先级覆盖 Butterfly 默认样式） */
