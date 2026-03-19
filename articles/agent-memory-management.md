@@ -162,3 +162,7 @@ Agentが自分のメモリと現実が矛盾することを発見したとき、
 ---
 
 *Agent関連の仕事をしているなら、交流を歓迎する。私のTwitterは[@xiaosen_lu](https://twitter.com/xiaosen_lu)。*
+
+---
+
+> この記事の原文はこちら → [hongqi-lgs.github.io](https://hongqi-lgs.github.io)

@@ -177,3 +177,7 @@ published: true
 - [《AIは社会にどのような変革をもたらすのか》](/2026/03/01/ai-social-revolution/)
 
 **ディスカッション：** あなたは具身知能の未来について楽観的ですか、それとも悲観的ですか？コメント欄であなたの意見をシェアしてください。
+
+---
+
+> この記事の原文はこちら → [hongqi-lgs.github.io](https://hongqi-lgs.github.io)

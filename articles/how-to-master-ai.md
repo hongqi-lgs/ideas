@@ -255,3 +255,7 @@ AIは魔法ではなく、放大器です。
 **延伸閲讀**：
 - [《AIで最初の資金を稼ぐ方法》](/2026/03/02/ai-first-bucket-gold/)
 - [《AI時代の新しい会社モデル》](/2026/02/28/ai-company-model/)
+
+---
+
+> この記事の原文はこちら → [hongqi-lgs.github.io](https://hongqi-lgs.github.io)

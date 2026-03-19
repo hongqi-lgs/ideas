@@ -296,3 +296,7 @@ AIはこれらの履歴を読んで「なぜこのテストがこう設計され
 ---
 
 *これはAIネイティブ開発シリーズの第2弾です。前回：[《AI Codingの躓きの石の一つ：プログラムの暗黙の契約問題》](/2026/03/02/ai-coding-implicit-contracts/)*
+
+---
+
+> この記事の原文はこちら → [hongqi-lgs.github.io](https://hongqi-lgs.github.io)

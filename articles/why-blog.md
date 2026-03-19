@@ -49,3 +49,7 @@ published: true
 さあ、書き始めよう。
 
 *— 紅齊、2026年2月*
+
+---
+
+> この記事の原文はこちら → [hongqi-lgs.github.io](https://hongqi-lgs.github.io)

@@ -226,3 +226,7 @@ AI Codingも同じ。
 私たちは今この転換点に立っている。
 
 蒸気機関がすでに馬車に載っている。鉄道はまだ遠いだろうか？
+
+---
+
+> この記事の原文はこちら → [hongqi-lgs.github.io](https://hongqi-lgs.github.io)

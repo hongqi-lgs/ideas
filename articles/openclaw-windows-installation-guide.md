@@ -292,3 +292,7 @@ Gateway が正常に動作したら、以下を試せます：
 **関連読書**：
 - [《AI時代の新しい会社モデル》](/2026/02/28/ai-company-model/)
 - [《普通の人がAIを使いこなす30日間計画》](/2026/03/04/how-to-master-ai/)
+
+---
+
+> この記事の原文はこちら → [hongqi-lgs.github.io](https://hongqi-lgs.github.io)

@@ -204,3 +204,7 @@ Agentの目と手はいくつかの方向に進化すると思う：
 *この記事の構築、デプロイ、デバッグプロセスは、すべて目と手を持つAgentが完了した。ページが白くなったのを見て、自分で原因を調べ、設定を修正し、再デプロイした。これが目と手の力だ。*
 
 *Agentの能力の境界を探求しているなら、[Twitter](https://twitter.com/xiaosen_lu)で話しかけてほしい。*
+
+---
+
+> この記事の原文はこちら → [hongqi-lgs.github.io](https://hongqi-lgs.github.io)
