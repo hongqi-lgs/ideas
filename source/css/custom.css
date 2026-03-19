@@ -1,5 +1,34 @@
 /* ===== 全局优化 ===== */
 
+/* 全站背景 — 米白纸质感 */
+:root {
+  --global-bg: #faf8f4;
+  --main-bg: #faf8f4;
+  --card-bg: #ffffff;
+  --site-bg: #faf8f4;
+}
+
+body {
+  background-color: #faf8f4 !important;
+}
+
+#body-wrap {
+  background-color: #faf8f4 !important;
+}
+
+/* 暗色模式全站背景 */
+[data-theme="dark"] {
+  --global-bg: #1a1814;
+  --main-bg: #1a1814;
+  --card-bg: #242220;
+  --site-bg: #1a1814;
+}
+
+[data-theme="dark"] body,
+[data-theme="dark"] #body-wrap {
+  background-color: #1a1814 !important;
+}
+
 /* 导航栏 — 米白纸质感 */
 #nav {
   background: #faf8f4 !important;
