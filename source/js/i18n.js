@@ -25,7 +25,7 @@
     en: {
       menu:    {'首页':'Home','归档':'Archives','标签':'Tags','分类':'Categories','关于':'About','ホーム':'Home','アーカイブ':'Archives','タグ':'Tags','カテゴリー':'Categories','カテゴリ':'Categories','について':'About'},
       sidebar: {'公告':'Announcement','最新文章':'Recent Posts','网站信息':'Site Info','目录':'TOC','邮件订阅':'Email Subscribe','分类':'Categories','标签':'Tags','归档':'Archives','お知らせ':'Announcement','最新記事':'Recent Posts','サイト情報':'Site Info','目次':'TOC','メール購読':'Email Subscribe','カテゴリー':'Categories','カテゴリ':'Categories','タグ':'Tags','アーカイブ':'Archives'},
-      stats:   {'文章':'Posts','標签':'Tags','分类':'Categories','記事':'Posts','タグ':'Tags','カテゴリー':'Categories','Articles':'Posts'},
+      stats:   {'文章':'Posts','標签':'Tags','分类':'Categories','記事':'Posts','タグ':'Tags','カテゴリー':'Categories','カテゴリ':'Categories','Articles':'Posts'},
       meta:    {'发表于':'Posted on','投稿日':'Posted on'},
       pagination: {'上一篇':'Previous','下一篇':'Next','前の記事':'Previous','次の記事':'Next'},
       related: {'相关推荐':'Related Posts','関連記事':'Related Posts'},
@@ -53,7 +53,7 @@
     'zh-CN': {
       menu:    {'Home':'首页','Archives':'归档','Tags':'标签','Categories':'分类','About':'关于','ホーム':'首页','アーカイブ':'归档','タグ':'标签','カテゴリー':'分类','カテゴリ':'分类','について':'关于'},
       sidebar: {'Announcement':'公告','Recent Posts':'最新文章','Site Info':'网站信息','TOC':'目录','Email Subscribe':'邮件订阅','Categories':'分类','Tags':'标签','Archives':'归档','お知らせ':'公告','最新記事':'最新文章','サイト情報':'网站信息','目次':'目录','メール購読':'邮件订阅','カテゴリー':'分类','カテゴリ':'分类','タグ':'标签','アーカイブ':'归档'},
-      stats:   {'Posts':'文章','Articles':'文章','Tags':'标签','Categories':'分类','記事':'文章','タグ':'标签','カテゴリー':'分类'},
+      stats:   {'Posts':'文章','Articles':'文章','Tags':'标签','Categories':'分类','記事':'文章','タグ':'标签','カテゴリー':'分类','カテゴリ':'分类'},
       meta:    {'Posted on':'发表于','投稿日':'发表于'},
       pagination: {'Previous':'上一篇','Next':'下一篇','前の記事':'上一篇','次の記事':'下一篇'},
       related: {'Related Posts':'相关推荐','関連記事':'相关推荐'},
