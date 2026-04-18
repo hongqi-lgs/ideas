@@ -66,13 +66,38 @@
     },
   };
 
+  function langFromUrl() {
+    var p = window.location.pathname.replace(/\/+$/, '').replace(/\.html$/, '');
+    // about 页
+    if (/\/index-ja$/.test(p)) return 'ja';
+    if (/\/index-en$/.test(p)) return 'en';
+    if (/\/about$/.test(p)) return 'zh-CN';
+    // 文章页: /YYYY/MM/DD/slug[-lang]/
+    var m = p.match(/\/\d{4}\/\d{2}\/\d{2}\/(.+)$/);
+    if (m) {
+      var slug = m[1];
+      if (/-(ja)$/.test(slug)) return 'ja';
+      if (/-(en)$/.test(slug)) return 'en';
+      return 'zh-CN';  // 无后缀的文章 = 中文
+    }
+    return null;  // 非文章页，不从 URL 推断
+  }
+
   function getLang() {
+    // 1. URL 明确指定语言 → 优先，并种入 localStorage
+    var urlLang = langFromUrl();
+    if (urlLang) {
+      localStorage.setItem(STORAGE_KEY, urlLang);
+      return urlLang;
+    }
+    // 2. localStorage 已有
     var s = localStorage.getItem(STORAGE_KEY);
     if (s && T[s]) return s;
+    // 3. 浏览器语言 fallback，并种入 localStorage
     var bl = (navigator.language || '').toLowerCase();
-    if (bl.startsWith('zh')) return 'zh-CN';
-    if (bl.startsWith('ja')) return 'ja';
-    return 'en';
+    var fallback = bl.startsWith('zh') ? 'zh-CN' : bl.startsWith('ja') ? 'ja' : 'en';
+    localStorage.setItem(STORAGE_KEY, fallback);
+    return fallback;
   }
 
   function setLang(lang) {
