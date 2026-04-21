@@ -198,6 +198,17 @@ reward:
       link:
       text: 支付宝
 
+# 广告
+ad:
+  aside: |
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-4079054696123142"
+         data-ad-slot="9951901466"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
 # 自定义注入
 inject:
   head:
